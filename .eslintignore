@@ -1,0 +1,9 @@
+*.d.ts
+*.scss.ts
+*.test.tsx
+.eslintrc.js
+serviceWorker.ts
+gulpfile.js
+build/*
+!build/index.js
+generated
