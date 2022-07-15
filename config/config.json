@@ -11,7 +11,9 @@
       ]
     }
   },
-  "externals": {},
+  "externals": {
+    "devexpress": "http://cdn3.devexpress.com/jslib/22.1.3/css/dx.material.blue.light.css"
+  },
   "localizedResources": {
     "SpfxDevExpressPoCWebPartStrings": "lib/webparts/spfxDevExpressPoC/loc/{locale}.js"
   }

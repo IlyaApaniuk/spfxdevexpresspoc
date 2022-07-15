@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import { Version } from "@microsoft/sp-core-library";
+import { SPComponentLoader } from "@microsoft/sp-loader";
 import { IPropertyPaneConfiguration, PropertyPaneTextField } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -33,6 +34,7 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
 
     protected onInit(): Promise<void> {
         this.environmentMessage = this.getEnvironmentMessage();
+        SPComponentLoader.loadCss("https://cdn3.devexpress.com/jslib/22.1.3/css/dx.material.blue.light.css");
 
         return super.onInit();
     }
