@@ -1,0 +1,34 @@
+.recorderDialogWrapper {
+    position: relative;
+
+    .recordName {
+        position: absolute;
+        left: 30px;
+        top: 85px;
+        z-index: 99;
+
+        :global .ms-Label {
+            color: #ffffff;
+        }
+    }
+
+    .uploading {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        z-index: 99;
+    }
+
+    .error {
+        color: #ff0000;
+        font-size: 16px;
+    }
+
+    .success {
+        color: #00ff00;
+    }
+}

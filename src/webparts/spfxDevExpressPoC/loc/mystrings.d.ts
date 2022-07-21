@@ -6,6 +6,12 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     AppLocalEnvironmentTeams: string;
     AppSharePointEnvironment: string;
     AppTeamsTabEnvironment: string;
+    OpenDialogButton: string;
+    NotificationUploadedSuccessfully: string;
+    NotificationUploadedFailed: string;
+    NotificationEmptyRecordName: string;
+    RecordNameTextFieldLabel: string;
+    DialogTitle: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {
