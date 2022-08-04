@@ -7,7 +7,8 @@ export default function parseRecordsResponse(response: { value: unknown[] }): IR
         return records.map(r => {
             return {
                 url: r["ServerRelativeUrl"],
-                label: r["Name"]
+                label: r["Name"],
+                created: new Date(r["TimeCreated"])
             } as IRecord;
         });
     } catch (e) {

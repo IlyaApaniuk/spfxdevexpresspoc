@@ -12,6 +12,15 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     NotificationEmptyRecordName: string;
     RecordNameTextFieldLabel: string;
     DialogTitle: string;
+    StartRecordLabel: string;
+    RecordingLabel: string;
+    StopRecordLabel: string;
+    PauseRecordLabel: string;
+    ResueRecordLabel: string;
+    SaveRecordLabel: string;
+    CancelRecordLabel: string;
+    TableRecordLabel: string;
+    TableCreatedLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

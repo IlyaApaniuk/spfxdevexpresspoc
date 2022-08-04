@@ -12,6 +12,15 @@ define([], function() {
     "NotificationUploadedFailed": "Failed to upload your record to document library. Try again or contact administrator.",
     "NotificationEmptyRecordName": "Please, specify record name.",
     "RecordNameTextFieldLabel": "Enter record name",
-    "DialogTitle": "New recording"
+    "DialogTitle": "New recording",
+    "StartRecordLabel": "Record",
+    "RecordingLabel": "Recording...",
+    "StopRecordLabel": "Finish",
+    "PauseRecordLabel": "Pause",
+    "ResueRecordLabel": "Resume",
+    "SaveRecordLabel": "Save",
+    "CancelRecordLabel": "Cancel",
+    "TableRecordLabel": "Record",
+    "TableCreatedLabel": "Created"
   }
 });

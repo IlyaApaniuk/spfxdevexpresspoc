@@ -1,14 +1,23 @@
 .recorderDialogWrapper {
     position: relative;
 
-    .recordName {
-        position: absolute;
-        left: 30px;
-        top: 85px;
-        z-index: 99;
+    .recorderControlsWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 15px;
 
-        :global .ms-Label {
-            color: #ffffff;
+        .recordNameTextField {
+            width: 300px;
+        }
+
+        .recorderControls {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
         }
     }
 
