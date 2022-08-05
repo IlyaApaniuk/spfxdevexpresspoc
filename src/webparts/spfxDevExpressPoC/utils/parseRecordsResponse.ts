@@ -2,7 +2,7 @@ import { IRecord } from "../models/IRecord";
 
 export default function parseRecordsResponse(response: { value: unknown[] }): IRecord[] {
     try {
-        const records = response?.value?.filter(r => r["Name"].indexOf(".mp3") > 0);
+        const records = response?.value?.filter(r => r["Name"].indexOf(".mp3") > 0 || r["Name"].indexOf(".wav") > 0);
 
         return records.map(r => {
             return {

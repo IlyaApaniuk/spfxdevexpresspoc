@@ -11,9 +11,10 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     NotificationUploadedFailed: string;
     NotificationEmptyRecordName: string;
     RecordNameTextFieldLabel: string;
+    RecordFormatDropdownLabel: string;
     DialogTitle: string;
     StartRecordLabel: string;
-    RecordingLabel: string;
+    RerecordLabel: string;
     StopRecordLabel: string;
     PauseRecordLabel: string;
     ResueRecordLabel: string;
