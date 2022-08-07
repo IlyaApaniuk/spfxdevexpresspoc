@@ -14,9 +14,10 @@ export interface ISpfxDevExpressPoCProps {
     libraryName: string;
     sourceSite: string;
     uploadService: SharePointService;
+    disableCreateNewRecord: boolean;
 }
 
-const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sourceSite, uploadService }) => {
+const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ disableCreateNewRecord, libraryName, sourceSite, uploadService }) => {
     const [hideDialog, setHideDialog] = React.useState<boolean>(true);
     const [records, setRecords] = React.useState<IRecord[]>([]);
     const [editableRecord, setEditableRecord] = React.useState<IRecord | null>(null);
@@ -56,15 +57,16 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sou
 
     return (
         <div className={styles.spfxDevExpressWrapper}>
-            <PrimaryButton text={strings.OpenDialogButton} onClick={onShowDialog} />
+            <PrimaryButton style={{ display: disableCreateNewRecord ? "none" : "block" }} text={strings.OpenDialogButton} onClick={onShowDialog} />
             <DataGrid allowColumnReordering rowAlternationEnabled dataSource={records} showBorders remoteOperations>
-                <SearchPanel visible highlightCaseSensitive />
+                <SearchPanel visible />
                 <Editing allowUpdating />
+                <Column dataField="label" visible={false} />
                 <Column type="buttons" width={50}>
                     <Button name="edit" onClick={onShowEditDialog} />
                 </Column>
-                <Column caption={strings.TableRecordLabel} width={150} dataField="label" cellRender={recordCellRender} dataType="text" />
-                <Column caption={strings.TableCreatedLabel} width={100} dataField="created" defaultSortOrder="desc" dataType="date" />
+                <Column caption={strings.TableRecordLabel} width={150} cellRender={recordCellRender} dataType="text" />
+                <Column caption={strings.TableModifiedLabel} width={100} dataField="modified" defaultSortOrder="desc" dataType="date" />
                 <Paging defaultPageSize={10} />
             </DataGrid>
             <RecorderDialog editableRecord={editableRecord} uploadService={uploadService} hideDialog={hideDialog} onClose={onHideDialog} />

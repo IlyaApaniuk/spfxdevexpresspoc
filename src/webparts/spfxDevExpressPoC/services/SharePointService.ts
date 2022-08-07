@@ -66,17 +66,12 @@ export default class SharePointService {
     }
 
     private libraryUploadUrlBuiler(fileName: string): string {
-        const libraryName = this.libraryName || "Documents";
-        const siteUrl = this.siteUrl || this.pageContext.web.absoluteUrl;
-
-        return `${siteUrl}/_api/Web/Lists/getByTitle('${libraryName}')/RootFolder/Files/Add(url='${fileName}', overwrite=true)`;
+        return `${this.siteUrl}/_api/Web/Lists/getByTitle('${this.libraryName}')/RootFolder/Files/Add(url='${fileName}', overwrite=true)`;
     }
 
     private getRecordsUrlBuilder(): string {
-        const libraryName = this.libraryName || "Shared Documents";
-        const siteUrl = this.siteUrl || this.pageContext.web.absoluteUrl;
-        const serverRelativeUrl = this.siteUrl ? new window.URL(this.siteUrl).pathname : this.pageContext.web.serverRelativeUrl;
+        const serverRelativeUrl = new window.URL(this.siteUrl).pathname;
 
-        return `${siteUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeUrl}/${libraryName}')/Files`;
+        return `${this.siteUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeUrl}/${this.libraryName}')/Files`;
     }
 }

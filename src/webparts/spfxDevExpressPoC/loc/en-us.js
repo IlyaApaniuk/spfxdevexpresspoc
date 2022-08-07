@@ -4,6 +4,7 @@ define([], function() {
     "SettingsGroupName": "Source settings",
     "SourceLibraryNameLable": "Library name",
     "PickSourceSiteLabel": "Select source site",
+    "DisableCreateNewRecordLabel": "Disable create new record button",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppSharePointEnvironment": "The app is running on SharePoint page",
@@ -24,6 +25,6 @@ define([], function() {
     "SaveRecordLabel": "Save",
     "CancelRecordLabel": "Cancel",
     "TableRecordLabel": "Record",
-    "TableCreatedLabel": "Created"
+    "TableModifiedLabel": "Modified"
   }
 });

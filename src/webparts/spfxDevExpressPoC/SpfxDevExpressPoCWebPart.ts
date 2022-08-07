@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import { Version } from "@microsoft/sp-core-library";
-import { IPropertyPaneConfiguration, PropertyPaneTextField } from "@microsoft/sp-property-pane";
+import { IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneToggle } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
@@ -14,6 +14,7 @@ import SharePointService from "./services/SharePointService";
 export interface ISpfxDevExpressPoCWebPartProps {
     libraryName: string;
     sourceSites: IPropertyFieldSite[];
+    disableCreateNewRecord: boolean;
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -21,6 +22,7 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
 
     public render(): void {
         const element: React.ReactElement<ISpfxDevExpressPoCProps> = React.createElement(SpfxDevExpressPoC, {
+            disableCreateNewRecord: this.properties.disableCreateNewRecord,
             libraryName: this.properties.libraryName,
             sourceSite: this.properties.sourceSites?.[0]?.url,
             uploadService: this.uploadService
@@ -69,6 +71,10 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneTextField("libraryName", {
                                     label: strings.SourceLibraryNameLable,
                                     value: this.properties.libraryName
+                                }),
+                                PropertyPaneToggle("disableCreateNewRecord", {
+                                    label: strings.DisableCreateNewRecordLabel,
+                                    checked: this.properties.disableCreateNewRecord
                                 })
                             ]
                         }

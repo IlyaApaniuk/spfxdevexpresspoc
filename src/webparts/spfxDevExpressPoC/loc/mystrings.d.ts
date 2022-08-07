@@ -3,6 +3,7 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     SettingsGroupName: string;
     SourceLibraryNameLable: string;
     PickSourceSiteLabel: string;
+    DisableCreateNewRecordLabel: string;
     AppLocalEnvironmentSharePoint: string;
     AppLocalEnvironmentTeams: string;
     AppSharePointEnvironment: string;
@@ -23,7 +24,7 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     SaveRecordLabel: string;
     CancelRecordLabel: string;
     TableRecordLabel: string;
-    TableCreatedLabel: string;
+    TableModifiedLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

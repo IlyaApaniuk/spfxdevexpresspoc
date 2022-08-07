@@ -8,7 +8,7 @@ export default function parseRecordsResponse(response: { value: unknown[] }): IR
             return {
                 url: r["ServerRelativeUrl"],
                 label: r["Name"],
-                created: new Date(r["TimeCreated"])
+                modified: new Date(r["TimeLastModified"])
             } as IRecord;
         });
     } catch (e) {
