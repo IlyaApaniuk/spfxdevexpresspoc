@@ -1,7 +1,8 @@
 declare interface ISpfxDevExpressPoCWebPartStrings {
     PropertyPaneDescription: string;
     SettingsGroupName: string;
-    HeaderLabel: string;
+    SourceLibraryNameLable: string;
+    PickSourceSiteLabel: string;
     AppLocalEnvironmentSharePoint: string;
     AppLocalEnvironmentTeams: string;
     AppSharePointEnvironment: string;
@@ -12,7 +13,8 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     NotificationEmptyRecordName: string;
     RecordNameTextFieldLabel: string;
     RecordFormatDropdownLabel: string;
-    DialogTitle: string;
+    NewRecordingDialogTitle: string;
+    EditRecordingDialogTitle: string;
     StartRecordLabel: string;
     RerecordLabel: string;
     StopRecordLabel: string;

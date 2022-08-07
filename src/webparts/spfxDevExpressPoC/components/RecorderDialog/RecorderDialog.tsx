@@ -11,6 +11,7 @@ import * as strings from "SpfxDevExpressPoCWebPartStrings";
 import SharePointService from "../../services/SharePointService";
 import useVoiceRecorder from "../../hooks/useVoiceRecorder";
 import Timer from "../Timer/Timer";
+import { IRecord } from "../../models/IRecord";
 
 import styles from "./RecorderDialog.module.scss";
 
@@ -18,11 +19,11 @@ export interface IRecorderDialogProps {
     uploadService: SharePointService;
     onClose: () => void;
     hideDialog: boolean;
+    editableRecord?: IRecord | null;
 }
 
 const dialogContentProps = {
     type: DialogType.normal,
-    title: strings.DialogTitle,
     showCloseButton: true
 };
 
@@ -80,7 +81,7 @@ const reducer = (state: IRecorderDialogState, action: Actions): IRecorderDialogS
     }
 };
 
-const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDialog, onClose }) => {
+const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, uploadService, hideDialog, onClose }) => {
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const { status, time, onStart, onStop, onPause, onResume, onCancel } = useVoiceRecorder((recordedBlob: Blob) => dispatch({ type: "setBlob", payload: recordedBlob }));
 
@@ -89,15 +90,15 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDia
     };
 
     const uploadAudio = async () => {
-        if (!state.recordName) {
+        if (!editableRecord && !state.recordName) {
             dispatch({ type: "setNotification", payload: { message: strings.NotificationEmptyRecordName, status: false } });
 
             return;
         }
         dispatch({ type: "uploadingStart" });
 
-        const file = new File([state.blob], state.recordName);
-        const isUploaded = await uploadService.uploadFile(file, `${file.name}.${state.recordFormat?.text}`);
+        const file = new File([state.blob], editableRecord ? editableRecord.label : `${state.recordName}.${state.recordFormat?.text}`);
+        const isUploaded = await uploadService.uploadFile(file, file.name);
 
         dispatch({
             type: "uploadingFinished",
@@ -130,6 +131,10 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDia
 
     const onRecordNameChange = React.useCallback((event, newValue?: string) => dispatch({ type: "setRecordName", payload: newValue }), []);
     const onRecordFormatChange = React.useCallback((event, option?: IDropdownOption) => dispatch({ type: "setRecordFormat", payload: option }), []);
+    const onShowAudio = () => (editableRecord || state.blob) && status !== "recording";
+    const getAudioSrc = () => {
+        return editableRecord && status !== "recorded" ? editableRecord.url : state.blob && window.URL.createObjectURL(state.blob);
+    };
 
     return (
         <Dialog
@@ -147,7 +152,7 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDia
             }}
             minWidth={600}
             hidden={hideDialog}
-            dialogContentProps={dialogContentProps}
+            dialogContentProps={{ ...dialogContentProps, title: editableRecord ? strings.EditRecordingDialogTitle : strings.NewRecordingDialogTitle }}
             onDismiss={onDialogClose}
         >
             <div className={styles.recorderDialogWrapper}>
@@ -161,7 +166,7 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDia
                         <PrimaryButton
                             disabled={status === "recording" || status === "paused"}
                             onClick={onRecordingStart}
-                            text={status === "recorded" ? strings.RerecordLabel : strings.StartRecordLabel}
+                            text={status === "recorded" || editableRecord ? strings.RerecordLabel : strings.StartRecordLabel}
                         />
                         <PrimaryButton
                             disabled={status === "idle" || status === "recorded"}
@@ -171,20 +176,22 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ uploadService, hideDia
                         <DefaultButton disabled={status === "recorded" || status === "idle"} onClick={onStop} text={strings.StopRecordLabel} />
                     </div>
                     {status !== "idle" && status !== "recorded" && <Timer time={time} />}
-                    {state.blob && (
-                        <audio src={window.URL.createObjectURL(state.blob)} controls preload="auto">
+                    {onShowAudio() && (
+                        <audio src={getAudioSrc()} controls preload="auto">
                             <track kind="captions" />
                         </audio>
                     )}
-                    <div className={styles.recordName}>
-                        <TextField className={styles.recordNameTextField} label={strings.RecordNameTextFieldLabel} value={state.recordName} onChange={onRecordNameChange} />
-                        <Dropdown options={audioTypes} selectedKey={state.recordFormat?.key} label={strings.RecordFormatDropdownLabel} onChange={onRecordFormatChange} />
-                    </div>
+                    {!editableRecord && (
+                        <div className={styles.recordName}>
+                            <TextField className={styles.recordNameTextField} label={strings.RecordNameTextFieldLabel} value={state.recordName} onChange={onRecordNameChange} />
+                            <Dropdown options={audioTypes} selectedKey={state.recordFormat?.key} label={strings.RecordFormatDropdownLabel} onChange={onRecordFormatChange} />
+                        </div>
+                    )}
                     {state.notification?.message && <div className={state.notification.status ? styles.success : styles.error}>{state.notification.message}</div>}
                 </div>
             </div>
             <DialogFooter>
-                <PrimaryButton onClick={uploadAudio} text={strings.SaveRecordLabel} />
+                <PrimaryButton disabled={editableRecord && status !== "recorded"} onClick={uploadAudio} text={strings.SaveRecordLabel} />
                 <DefaultButton onClick={onDialogClose} text={strings.CancelRecordLabel} />
             </DialogFooter>
         </Dialog>

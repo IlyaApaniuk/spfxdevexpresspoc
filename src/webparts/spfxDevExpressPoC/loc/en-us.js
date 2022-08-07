@@ -1,8 +1,9 @@
 define([], function() {
   return {
     "PropertyPaneDescription": "Settings",
-    "SettingsGroupName": "Settings",
-    "HeaderLabel": "Header label",
+    "SettingsGroupName": "Source settings",
+    "SourceLibraryNameLable": "Library name",
+    "PickSourceSiteLabel": "Select source site",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppSharePointEnvironment": "The app is running on SharePoint page",
@@ -13,7 +14,8 @@ define([], function() {
     "NotificationEmptyRecordName": "Please, specify record name.",
     "RecordNameTextFieldLabel": "Enter record name",
     "RecordFormatDropdownLabel": "Select format",
-    "DialogTitle": "New recording",
+    "NewRecordingDialogTitle": "New recording",
+    "EditRecordingDialogTitle": "Edit recording",
     "StartRecordLabel": "Record",
     "RerecordLabel": "Re-record",
     "StopRecordLabel": "Finish",

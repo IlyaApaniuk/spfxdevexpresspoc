@@ -6,12 +6,14 @@ import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 import { SPComponentLoader } from "@microsoft/sp-loader";
+import { PropertyFieldSitePicker, IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFieldSitePicker";
 
 import SpfxDevExpressPoC, { ISpfxDevExpressPoCProps } from "./components/SpfxDevExpressPoC";
 import SharePointService from "./services/SharePointService";
 
 export interface ISpfxDevExpressPoCWebPartProps {
-    headerLabel: string;
+    libraryName: string;
+    sourceSites: IPropertyFieldSite[];
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -19,7 +21,8 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
 
     public render(): void {
         const element: React.ReactElement<ISpfxDevExpressPoCProps> = React.createElement(SpfxDevExpressPoC, {
-            headerLabel: this.properties.headerLabel,
+            libraryName: this.properties.libraryName,
+            sourceSite: this.properties.sourceSites?.[0]?.url,
             uploadService: this.uploadService
         });
 
@@ -52,8 +55,20 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                         {
                             groupName: strings.SettingsGroupName,
                             groupFields: [
-                                PropertyPaneTextField("headerLabel", {
-                                    label: strings.HeaderLabel
+                                PropertyFieldSitePicker("sourceSites", {
+                                    label: strings.PickSourceSiteLabel,
+                                    initialSites: this.properties.sourceSites,
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    context: this.context as any,
+                                    deferredValidationTime: 500,
+                                    multiSelect: false,
+                                    onPropertyChange: this.onPropertyPaneFieldChanged,
+                                    properties: this.properties,
+                                    key: "sitesFieldId"
+                                }),
+                                PropertyPaneTextField("libraryName", {
+                                    label: strings.SourceLibraryNameLable,
+                                    value: this.properties.libraryName
                                 })
                             ]
                         }

@@ -8,6 +8,10 @@ import parseRecordsResponse from "../utils/parseRecordsResponse";
 export default class SharePointService {
     public static readonly serviceKey = ServiceKey.create<SharePointService>("voice-recorder:UploadService", SharePointService);
 
+    public libraryName: string;
+
+    public siteUrl: string;
+
     private spHttpClient: SPHttpClient;
 
     private pageContext: PageContext;
@@ -62,10 +66,17 @@ export default class SharePointService {
     }
 
     private libraryUploadUrlBuiler(fileName: string): string {
-        return `${this.pageContext.web.absoluteUrl}/_api/Web/Lists/getByTitle('Documents')/RootFolder/Files/Add(url='${fileName}', overwrite=true)`;
+        const libraryName = this.libraryName || "Documents";
+        const siteUrl = this.siteUrl || this.pageContext.web.absoluteUrl;
+
+        return `${siteUrl}/_api/Web/Lists/getByTitle('${libraryName}')/RootFolder/Files/Add(url='${fileName}', overwrite=true)`;
     }
 
     private getRecordsUrlBuilder(): string {
-        return `${this.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('${this.pageContext.web.serverRelativeUrl}/Shared Documents')/Files`;
+        const libraryName = this.libraryName || "Shared Documents";
+        const siteUrl = this.siteUrl || this.pageContext.web.absoluteUrl;
+        const serverRelativeUrl = this.siteUrl ? new window.URL(this.siteUrl).pathname : this.pageContext.web.serverRelativeUrl;
+
+        return `${siteUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeUrl}/${libraryName}')/Files`;
     }
 }

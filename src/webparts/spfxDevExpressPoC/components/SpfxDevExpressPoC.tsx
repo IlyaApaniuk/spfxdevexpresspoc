@@ -1,6 +1,6 @@
 import * as React from "react";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
-import DataGrid, { Column, SearchPanel, Pager, Paging } from "devextreme-react/data-grid";
+import DataGrid, { Column, SearchPanel, Paging, Button, Editing } from "devextreme-react/data-grid";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
@@ -11,25 +11,27 @@ import styles from "./SpfxDevExpressPoC.module.scss";
 import RecorderDialog from "./RecorderDialog/RecorderDialog";
 
 export interface ISpfxDevExpressPoCProps {
-    headerLabel: string;
+    libraryName: string;
+    sourceSite: string;
     uploadService: SharePointService;
 }
 
-const pageSizes = [5, 10, 25];
-
-const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ uploadService }) => {
+const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sourceSite, uploadService }) => {
     const [hideDialog, setHideDialog] = React.useState<boolean>(true);
     const [records, setRecords] = React.useState<IRecord[]>([]);
+    const [editableRecord, setEditableRecord] = React.useState<IRecord | null>(null);
 
     React.useEffect(() => {
         const loadRecords = async () => {
+            uploadService.libraryName = libraryName;
+            uploadService.siteUrl = sourceSite;
             const data = await uploadService.getRecords();
 
             setRecords(data);
         };
 
         loadRecords();
-    }, [uploadService, hideDialog]);
+    }, [uploadService, hideDialog, libraryName, sourceSite]);
 
     const recordCellRender = (settings: { data: IRecord }) => {
         return (
@@ -39,25 +41,33 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ uploadService })
         );
     };
 
-    const onHideDialog = React.useCallback(() => {
+    const onShowEditDialog = React.useCallback(e => {
+        setEditableRecord(e.row.data);
         setHideDialog(false);
     }, []);
 
     const onShowDialog = React.useCallback(() => {
+        setHideDialog(false);
+    }, []);
+
+    const onHideDialog = React.useCallback(() => {
         setHideDialog(true);
     }, []);
 
     return (
         <div className={styles.spfxDevExpressWrapper}>
-            <PrimaryButton text={strings.OpenDialogButton} onClick={onHideDialog} />
+            <PrimaryButton text={strings.OpenDialogButton} onClick={onShowDialog} />
             <DataGrid allowColumnReordering rowAlternationEnabled dataSource={records} showBorders remoteOperations>
                 <SearchPanel visible highlightCaseSensitive />
-                <Column caption={strings.TableRecordLabel} width={150} cellRender={recordCellRender} />
+                <Editing allowUpdating />
+                <Column type="buttons" width={50}>
+                    <Button name="edit" onClick={onShowEditDialog} />
+                </Column>
+                <Column caption={strings.TableRecordLabel} width={150} dataField="label" cellRender={recordCellRender} dataType="text" />
                 <Column caption={strings.TableCreatedLabel} width={100} dataField="created" defaultSortOrder="desc" dataType="date" />
-                <Pager allowedPageSizes={pageSizes} showPageSizeSelector />
-                <Paging defaultPageSize={5} />
+                <Paging defaultPageSize={10} />
             </DataGrid>
-            <RecorderDialog uploadService={uploadService} hideDialog={hideDialog} onClose={onShowDialog} />
+            <RecorderDialog editableRecord={editableRecord} uploadService={uploadService} hideDialog={hideDialog} onClose={onHideDialog} />
         </div>
     );
 };
