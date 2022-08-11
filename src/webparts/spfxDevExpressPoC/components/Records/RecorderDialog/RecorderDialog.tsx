@@ -8,15 +8,15 @@ import { Dropdown, IDropdownOption } from "@fluentui/react/lib/Dropdown";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
-import SharePointService from "../../services/SharePointService";
-import useVoiceRecorder from "../../hooks/useVoiceRecorder";
+import SharePointService from "../../../services/SharePointService";
+import useVoiceRecorder from "../../../hooks/useVoiceRecorder";
 import Timer from "../Timer/Timer";
-import { IRecord } from "../../models/IRecord";
+import { IRecord } from "../../../models/records/IRecord";
 
 import styles from "./RecorderDialog.module.scss";
 
 export interface IRecorderDialogProps {
-    uploadService: SharePointService;
+    sharePointService: SharePointService;
     onClose: () => void;
     hideDialog: boolean;
     editableRecord?: IRecord | null;
@@ -81,7 +81,7 @@ const reducer = (state: IRecorderDialogState, action: Actions): IRecorderDialogS
     }
 };
 
-const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, uploadService, hideDialog, onClose }) => {
+const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, sharePointService, hideDialog, onClose }) => {
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const { status, time, onStart, onStop, onPause, onResume, onCancel } = useVoiceRecorder((recordedBlob: Blob) => dispatch({ type: "setBlob", payload: recordedBlob }));
 
@@ -98,7 +98,7 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, upload
         dispatch({ type: "uploadingStart" });
 
         const file = new File([state.blob], editableRecord ? editableRecord.label : `${state.recordName}.${state.recordFormat?.text}`);
-        const isUploaded = await uploadService.uploadFile(file, file.name);
+        const isUploaded = await sharePointService.uploadFile("AudioFiles", file, file.name);
 
         dispatch({
             type: "uploadingFinished",

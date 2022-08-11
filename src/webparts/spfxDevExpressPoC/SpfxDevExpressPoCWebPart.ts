@@ -18,21 +18,21 @@ export interface ISpfxDevExpressPoCWebPartProps {
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
-    private uploadService: SharePointService;
+    private sharePointService: SharePointService;
 
     public render(): void {
         const element: React.ReactElement<ISpfxDevExpressPoCProps> = React.createElement(SpfxDevExpressPoC, {
             disableCreateNewRecord: this.properties.disableCreateNewRecord,
             libraryName: this.properties.libraryName,
             sourceSite: this.properties.sourceSites?.[0]?.url,
-            uploadService: this.uploadService
+            sharePointService: this.sharePointService
         });
 
         ReactDom.render(element, this.domElement);
     }
 
     protected onInit(): Promise<void> {
-        this.uploadService = this.context.serviceScope.consume(SharePointService.serviceKey);
+        this.sharePointService = this.context.serviceScope.consume(SharePointService.serviceKey);
         SPComponentLoader.loadCss("https://cdn3.devexpress.com/jslib/22.1.3/css/dx.material.blue.light.css");
 
         return super.onInit();

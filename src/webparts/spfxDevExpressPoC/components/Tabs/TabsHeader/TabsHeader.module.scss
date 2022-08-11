@@ -1,0 +1,20 @@
+.tabsHeaderWrapper {
+    overflow-x: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    .tabHeaderItem {
+        color: #201F1E;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px 16px;
+        cursor: pointer;
+
+        &.selected {
+            background-color: #F5F5F5;
+        }
+    }
+}

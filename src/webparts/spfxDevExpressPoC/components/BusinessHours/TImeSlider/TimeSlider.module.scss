@@ -1,0 +1,46 @@
+.timeSliderWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 5px;
+
+    .time {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .slider {
+        width: 380px;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .buttonsGroup {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    @media (min-width: 375px) {
+        .timeTextBox {
+            width: 70px;
+        }
+
+        .slider {
+            width: 315px;
+        }
+    }
+}

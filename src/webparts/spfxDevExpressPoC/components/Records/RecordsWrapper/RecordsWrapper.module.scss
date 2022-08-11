@@ -1,11 +1,8 @@
-.wrapper {
+.recordsWrapper {
+    cursor: default;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
     gap: 15px;
-
-    .dropdown {
-        width: 100px;
-    }
 }

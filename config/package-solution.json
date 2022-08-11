@@ -3,7 +3,7 @@
   "solution": {
     "name": "spfxdevexpress-client-side-solution",
     "id": "0312dcaf-f3f7-45af-bdb1-0a23293ee4b4",
-    "version": "1.0.1.1",
+    "version": "1.0.2.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,7 +30,7 @@
         "title": "spfxdevexpress Feature",
         "description": "The feature that activates elements of the spfxdevexpress solution.",
         "id": "affda5c4-ac29-48c3-97f2-fdbd1924a073",
-        "version": "1.0.1.1"
+        "version": "1.0.2.0"
       }
     ]
   },

@@ -9,6 +9,7 @@ define([], function() {
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppSharePointEnvironment": "The app is running on SharePoint page",
     "AppTeamsTabEnvironment": "The app is running in Microsoft Teams",
+    "ActiveSitesDropdownLabel": "Active sites",
     "OpenDialogButton": "Upload new recording",
     "NotificationUploadedSuccessfully": "Uploaded successfully.",
     "NotificationUploadedFailed": "Failed to upload your record to document library. Try again or contact administrator.",
@@ -25,6 +26,13 @@ define([], function() {
     "SaveRecordLabel": "Save",
     "CancelRecordLabel": "Cancel",
     "TableRecordLabel": "Record",
-    "TableModifiedLabel": "Modified"
+    "TableModifiedLabel": "Modified",
+    "RecordsTabLabel": "Records",
+    "BusinessHoursTabLabel": "Business hours",
+    "BusinessHoursErrorLable": "Unable to load business hours",
+    "BusinessHoursAllDayButtonLabel": "All day",
+    "BusinessHoursClosedButtonLabel": "Closed",
+    "BusinessHoursUpdateChangesButtonLabel": "Update Changes",
+    "BusinessHoursCancelButtonLabel": "Cancel"
   }
 });

@@ -8,6 +8,7 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     AppLocalEnvironmentTeams: string;
     AppSharePointEnvironment: string;
     AppTeamsTabEnvironment: string;
+    ActiveSitesDropdownLabel: string;
     OpenDialogButton: string;
     NotificationUploadedSuccessfully: string;
     NotificationUploadedFailed: string;
@@ -25,6 +26,13 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     CancelRecordLabel: string;
     TableRecordLabel: string;
     TableModifiedLabel: string;
+    RecordsTabLabel: string;
+    BusinessHoursTabLabel: string;
+    BusinessHoursErrorLable: string;
+    BusinessHoursAllDayButtonLabel: string;
+    BusinessHoursClosedButtonLabel: string;
+    BusinessHoursUpdateChangesButtonLabel: string;
+    BusinessHoursCancelButtonLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

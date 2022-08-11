@@ -1,4 +1,4 @@
-import { IRecord } from "../models/IRecord";
+import { IRecord } from "../../models/records/IRecord";
 
 export default function parseRecordsResponse(response: { value: unknown[] }): IRecord[] {
     try {
