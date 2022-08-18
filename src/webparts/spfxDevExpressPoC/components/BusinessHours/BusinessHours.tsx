@@ -7,6 +7,7 @@ import { IClientHourItem } from "../../models/businessHours/IClientHourItem";
 import SharePointService from "../../services/SharePointService";
 import parseBusinessHoursResponse from "../../utils/parsers/parseBusinessHoursResponse";
 import { parseTimeToNumber } from "../../utils/time/parseTime";
+import { updateItemsOnSelect, updateItemsOnUnselect } from "../../utils/time/updateItems";
 
 import styles from "./BusinessHours.module.scss";
 import Hour from "./Hour/Hour";
@@ -30,7 +31,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
                 const items = await sharePointService.getListItems<IClientHourItem[]>("Businesshours", parseBusinessHoursResponse);
 
                 setBusinessHoursItems(items);
-                setChangedItems(items);
+                setChangedItems([...items]);
                 setLoading(null);
             } catch (ex) {
                 console.error(ex);
@@ -45,18 +46,24 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
     const onSelectedDayChange = (id: number, checked: boolean) => {
         if (checked) {
             setSelectedDays([...selectedDays, id]);
+            const updatedItems = updateItemsOnSelect(selectedDays, id, changedItems);
+
+            setChangedItems([...updatedItems]);
         } else {
             const days = selectedDays;
 
             days.splice(days.indexOf(id), 1);
 
             setSelectedDays([...days]);
+            const updatedItems = updateItemsOnUnselect(businessHoursItems, id, changedItems);
+
+            setChangedItems([...updatedItems]);
         }
     };
 
     const onTimeSliderChange = (startTime: string, endTime: string, isAllday?: boolean) => {
         const items = changedItems.map(item => {
-            return selectedDays.indexOf(item.id) >= 0 ? { ...item, changed: true, startTime, endTime, allDay: isAllday } : item;
+            return selectedDays.indexOf(item.id) >= 0 ? { ...item, changed: true, startTime, endTime, allDay: isAllday ? true : false } : item;
         });
 
         setChangedItems([...items]);
@@ -73,7 +80,6 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
 
             setNotification({ message: uploaded ? "" : "", status: uploaded });
             setLoading(null);
-            setChangedItems([]);
             setSelectedDays([]);
         } catch (ex) {
             setLoading(null);

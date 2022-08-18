@@ -6,14 +6,14 @@ export function parseTimeToNumber(time: string): number {
     return hours * 60 + minutes;
 }
 
-export function parseNumberToTime(timeValue: number, isClosed?: boolean): string {
+export function parseNumberToTime(timeValue: number): string {
     let minutes = timeValue % 60;
     const nextHour = minutes > 0 ? timeValue + 60 - minutes : timeValue;
     let hours = nextHour / 60;
 
     hours = minutes > 0 ? hours - 1 : hours;
-    minutes = hours === 24 && !isClosed ? 59 : minutes;
-    hours = hours === 24 && !isClosed ? 23 : hours;
+    minutes = hours === 24 ? 59 : minutes;
+    hours = hours === 24 ? 23 : hours;
 
     return `${("0" + hours.toString()).slice(-2)}:${("0" + minutes.toString()).slice(-2)}`;
 }

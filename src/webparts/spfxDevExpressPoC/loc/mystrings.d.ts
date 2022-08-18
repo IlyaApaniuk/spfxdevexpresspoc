@@ -27,10 +27,12 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     TableRecordLabel: string;
     TableModifiedLabel: string;
     RecordsTabLabel: string;
+    BusinessHoursLabel: string;
     BusinessHoursTabLabel: string;
     BusinessHoursErrorLable: string;
     BusinessHoursAllDayButtonLabel: string;
     BusinessHoursClosedButtonLabel: string;
+    BusinessHoursWorkhoursLabel: string;
     BusinessHoursUpdateChangesButtonLabel: string;
     BusinessHoursCancelButtonLabel: string;
 }

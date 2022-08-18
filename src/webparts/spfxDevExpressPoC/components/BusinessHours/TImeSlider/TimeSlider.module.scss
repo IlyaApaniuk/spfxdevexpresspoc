@@ -4,6 +4,14 @@
     justify-content: flex-start;
     align-items: flex-start;
     gap: 5px;
+    border: 1px solid #808080;
+    padding: 8px;
+
+    .headerLabel {
+        padding: 5px 0 10px 0;
+        font-size: 15px;
+        font-weight: 600;
+    }
 
     .time {
         display: flex;
@@ -14,7 +22,7 @@
     }
 
     .slider {
-        width: 380px;
+        width: 100%;
     }
 
     .row {
@@ -32,15 +40,5 @@
         justify-content: flex-start;
         align-items: flex-start;
         gap: 10px;
-    }
-
-    @media (min-width: 375px) {
-        .timeTextBox {
-            width: 70px;
-        }
-
-        .slider {
-            width: 315px;
-        }
     }
 }

@@ -28,10 +28,12 @@ define([], function() {
     "TableRecordLabel": "Record",
     "TableModifiedLabel": "Modified",
     "RecordsTabLabel": "Records",
+    "BusinessHoursLabel": "Update Business Hours",
     "BusinessHoursTabLabel": "Business hours",
     "BusinessHoursErrorLable": "Unable to load business hours",
     "BusinessHoursAllDayButtonLabel": "All day",
     "BusinessHoursClosedButtonLabel": "Closed",
+    "BusinessHoursWorkhoursLabel": "9am - 5pm",
     "BusinessHoursUpdateChangesButtonLabel": "Update Changes",
     "BusinessHoursCancelButtonLabel": "Cancel"
   }

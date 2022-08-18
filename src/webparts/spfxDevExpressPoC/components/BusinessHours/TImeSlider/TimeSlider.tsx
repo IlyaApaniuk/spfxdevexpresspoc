@@ -19,7 +19,7 @@ export interface ITimeSliderProps {
 }
 
 const TimeSlider: React.FC<ITimeSliderProps> = ({ startTime, endTime, disableUploadButton, onTimeChange, onUploadChanges, onClose }) => {
-    const [value, setValue] = React.useState<[number, number]>([startTime || 540, endTime || 1080]);
+    const [value, setValue] = React.useState<[number, number]>([startTime !== undefined ? startTime : 540, endTime !== undefined ? endTime : 1080]);
 
     const onTimeChangeHandler = React.useCallback(
         (data: number, range?: [number, number]) => {
@@ -29,16 +29,29 @@ const TimeSlider: React.FC<ITimeSliderProps> = ({ startTime, endTime, disableUpl
         [onTimeChange]
     );
 
-    // Removed for currnt iteration
-    // const onAllDayClickHandler = React.useCallback(() => {
-    //     setValue([0, 1440]);
-    //     onTimeChange(parseNumberToTime(0), parseNumberToTime(1440), true);
-    // }, [onTimeChange]);
+    const onAllDayClickHandler = React.useCallback(() => {
+        const lowerTime = 0;
+        const defaultTime = 1440;
 
-    // const onClosedHandler = () => {
-    //     setValue([0, 1440]);
-    //     onTimeChange(parseNumberToTime(0), parseNumberToTime(1440, true), true);
-    // };
+        setValue([lowerTime, defaultTime]);
+        onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime), true);
+    }, [onTimeChange]);
+
+    const onSetWorkHours = React.useCallback(() => {
+        const lowerTime = 540;
+        const defaultTime = 1020;
+
+        setValue([lowerTime, defaultTime]);
+        onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime));
+    }, [onTimeChange]);
+
+    const onClosedHandler = () => {
+        const lowerTime = 0;
+        const defaultTime = 0;
+
+        setValue([lowerTime, defaultTime]);
+        onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime));
+    };
 
     const onCustomStartTimeChangeHandler = React.useCallback(
         (event, newValue: string) => {
@@ -56,19 +69,18 @@ const TimeSlider: React.FC<ITimeSliderProps> = ({ startTime, endTime, disableUpl
 
     return (
         <div className={styles.timeSliderWrapper}>
+            <span className={styles.headerLabel}>{strings.BusinessHoursLabel}</span>
             <div className={styles.time}>
-                <MaskedTextField className={styles.timeTextBox} mask="99:99" label="Start time" value={parseNumberToTime(value[0])} onChange={onCustomStartTimeChangeHandler} />
-                <MaskedTextField className={styles.timeTextBox} mask="99:99" label="End time" value={parseNumberToTime(value[1])} onChange={onCustomEndTimeChangeHandler} />
+                <MaskedTextField mask="99:99" label="Start time" value={parseNumberToTime(value[0])} onChange={onCustomStartTimeChangeHandler} />
+                <MaskedTextField mask="99:99" label="End time" value={parseNumberToTime(value[1])} onChange={onCustomEndTimeChangeHandler} />
             </div>
             <Slider className={styles.slider} ranged showValue={false} min={0} max={1440} value={value[1]} lowerValue={value[0]} step={15} onChange={onTimeChangeHandler} />
             <div className={styles.buttonsGroup}>
-                {
-                    // Removed for current iteration
-                    /* <div className={styles.row}>
-                    <PrimaryButton onClick={onAllDayClickHandler} text={strings.BusinessHoursAllDayButtonLabel} />
+                <div className={styles.row}>
+                    <DefaultButton onClick={onAllDayClickHandler} text={strings.BusinessHoursAllDayButtonLabel} />
+                    <DefaultButton onClick={onSetWorkHours} text={strings.BusinessHoursWorkhoursLabel} />
                     <DefaultButton onClick={onClosedHandler} text={strings.BusinessHoursClosedButtonLabel} />
-                </div> */
-                }
+                </div>
                 <div className={styles.row}>
                     <PrimaryButton disabled={disableUploadButton} text={strings.BusinessHoursUpdateChangesButtonLabel} onClick={onUploadChanges} />
                     <DefaultButton text={strings.BusinessHoursCancelButtonLabel} onClick={onClose} />
