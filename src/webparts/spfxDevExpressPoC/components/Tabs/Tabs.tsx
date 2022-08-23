@@ -15,6 +15,7 @@ export interface ITabsProps {
     activeSiteKey: string | number | null;
     sharePointService: SharePointService;
     disableCreateNewRecord: boolean;
+    recordsTabLabel: string;
 }
 
 const tabs: ITab[] = [
@@ -28,7 +29,7 @@ const tabs: ITab[] = [
     }
 ];
 
-const Tabs: React.FC<ITabsProps> = ({ activeSiteKey, sharePointService, disableCreateNewRecord }) => {
+const Tabs: React.FC<ITabsProps> = ({ activeSiteKey, sharePointService, disableCreateNewRecord, recordsTabLabel }) => {
     const [selectedTab, setSelectedTab] = React.useState<ITab>(tabs[0]);
 
     const onTabSelectedHandler = React.useCallback(tab => {
@@ -37,7 +38,7 @@ const Tabs: React.FC<ITabsProps> = ({ activeSiteKey, sharePointService, disableC
 
     return (
         <div className={styles.tabsWrapper}>
-            <TabsHeader values={tabs} selectedTab={selectedTab} onTabSelected={onTabSelectedHandler} />
+            <TabsHeader values={[{ ...tabs[0], label: recordsTabLabel || tabs[0].label }, { ...tabs[1] }]} selectedTab={selectedTab} onTabSelected={onTabSelectedHandler} />
             {selectedTab.id === 0 && (
                 <TabContent>
                     <RecordsWrapper activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} />

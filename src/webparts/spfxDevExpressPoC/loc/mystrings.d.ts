@@ -4,6 +4,8 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     SourceLibraryNameLable: string;
     PickSourceSiteLabel: string;
     DisableCreateNewRecordLabel: string;
+    UISettingsGroupName: string;
+    RecordsTabLabel: string;
     AppLocalEnvironmentSharePoint: string;
     AppLocalEnvironmentTeams: string;
     AppSharePointEnvironment: string;

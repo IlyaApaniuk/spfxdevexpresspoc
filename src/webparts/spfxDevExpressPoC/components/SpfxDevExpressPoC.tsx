@@ -15,9 +15,10 @@ export interface ISpfxDevExpressPoCProps {
     sourceSite: string;
     sharePointService: SharePointService;
     disableCreateNewRecord: boolean;
+    recordsTabLabel: string;
 }
 
-const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sourceSite, sharePointService, disableCreateNewRecord }) => {
+const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sourceSite, sharePointService, disableCreateNewRecord, recordsTabLabel }) => {
     const [activeSites, setActiveSites] = React.useState<ITag[]>([]);
     const [activeSiteKey, setActiveSiteKey] = React.useState<string | number>();
 
@@ -72,7 +73,9 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sou
                     id: "tag-list-id"
                 }}
             />
-            {activeSiteKey && <Tabs activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} />}
+            {activeSiteKey && (
+                <Tabs activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} recordsTabLabel={recordsTabLabel} />
+            )}
         </div>
     );
 };

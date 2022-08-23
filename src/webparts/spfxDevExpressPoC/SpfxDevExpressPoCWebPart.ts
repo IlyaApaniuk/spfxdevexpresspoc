@@ -15,6 +15,7 @@ export interface ISpfxDevExpressPoCWebPartProps {
     libraryName: string;
     sourceSites: IPropertyFieldSite[];
     disableCreateNewRecord: boolean;
+    recordsTabLabel: string;
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -25,7 +26,8 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
             disableCreateNewRecord: this.properties.disableCreateNewRecord,
             libraryName: this.properties.libraryName,
             sourceSite: this.properties.sourceSites?.[0]?.url,
-            sharePointService: this.sharePointService
+            sharePointService: this.sharePointService,
+            recordsTabLabel: this.properties.recordsTabLabel
         });
 
         ReactDom.render(element, this.domElement);
@@ -75,6 +77,15 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneToggle("disableCreateNewRecord", {
                                     label: strings.DisableCreateNewRecordLabel,
                                     checked: this.properties.disableCreateNewRecord
+                                })
+                            ]
+                        },
+                        {
+                            groupName: strings.UISettingsGroupName,
+                            groupFields: [
+                                PropertyPaneTextField("recordsTabLabel", {
+                                    label: strings.RecordsTabLabel,
+                                    value: this.properties.recordsTabLabel
                                 })
                             ]
                         }
