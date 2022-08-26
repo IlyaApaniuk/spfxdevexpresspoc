@@ -6,6 +6,7 @@ import { ITab } from "../../models/ITab";
 import SharePointService from "../../services/SharePointService";
 import RecordsWrapper from "../Records/RecordsWrapper/RecordsWrapper";
 import BusinessHours from "../BusinessHours/BusinessHours";
+import SkillsPerAgentWrapper from "../SkillsPerAgent/SkillsPerAgentWrapper/SkillsPerAgentWrapper";
 
 import TabsHeader from "./TabsHeader/TabsHeader";
 import TabContent from "./TabContent/TabContent";
@@ -26,6 +27,10 @@ const tabs: ITab[] = [
     {
         id: 1,
         label: strings.BusinessHoursTabLabel
+    },
+    {
+        id: 2,
+        label: strings.SkillPerAgentTabLabel
     }
 ];
 
@@ -38,7 +43,11 @@ const Tabs: React.FC<ITabsProps> = ({ activeSiteKey, sharePointService, disableC
 
     return (
         <div className={styles.tabsWrapper}>
-            <TabsHeader values={[{ ...tabs[0], label: recordsTabLabel || tabs[0].label }, { ...tabs[1] }]} selectedTab={selectedTab} onTabSelected={onTabSelectedHandler} />
+            <TabsHeader
+                values={tabs.map(tab => (tab.id === 0 ? { ...tab, label: recordsTabLabel || tab.label } : tab))}
+                selectedTab={selectedTab}
+                onTabSelected={onTabSelectedHandler}
+            />
             {selectedTab.id === 0 && (
                 <TabContent>
                     <RecordsWrapper activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} />
@@ -47,6 +56,11 @@ const Tabs: React.FC<ITabsProps> = ({ activeSiteKey, sharePointService, disableC
             {selectedTab.id === 1 && (
                 <TabContent>
                     <BusinessHours activeSiteKey={activeSiteKey} sharePointService={sharePointService} />
+                </TabContent>
+            )}
+            {selectedTab.id === 2 && (
+                <TabContent>
+                    <SkillsPerAgentWrapper sharePointService={sharePointService} />
                 </TabContent>
             )}
         </div>

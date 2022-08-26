@@ -21,29 +21,26 @@ export interface ITimeSliderProps {
 const TimeSlider: React.FC<ITimeSliderProps> = ({ startTime, endTime, disableUploadButton, onTimeChange, onUploadChanges, onClose }) => {
     const [value, setValue] = React.useState<[number, number]>([startTime !== undefined ? startTime : 540, endTime !== undefined ? endTime : 1080]);
 
-    const onTimeChangeHandler = React.useCallback(
-        (data: number, range?: [number, number]) => {
-            setValue([...range]);
-            onTimeChange(parseNumberToTime(range[0]), parseNumberToTime(range[1]));
-        },
-        [onTimeChange]
-    );
+    const onTimeChangeHandler = (data: number, range?: [number, number]) => {
+        setValue([...range]);
+        onTimeChange(parseNumberToTime(range[0]), parseNumberToTime(range[1]));
+    };
 
-    const onAllDayClickHandler = React.useCallback(() => {
+    const onAllDayClickHandler = () => {
         const lowerTime = 0;
         const defaultTime = 1440;
 
         setValue([lowerTime, defaultTime]);
         onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime), true);
-    }, [onTimeChange]);
+    };
 
-    const onSetWorkHours = React.useCallback(() => {
+    const onSetWorkHours = () => {
         const lowerTime = 540;
         const defaultTime = 1020;
 
         setValue([lowerTime, defaultTime]);
         onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime));
-    }, [onTimeChange]);
+    };
 
     const onClosedHandler = () => {
         const lowerTime = 0;
@@ -53,19 +50,13 @@ const TimeSlider: React.FC<ITimeSliderProps> = ({ startTime, endTime, disableUpl
         onTimeChange(parseNumberToTime(lowerTime), parseNumberToTime(defaultTime));
     };
 
-    const onCustomStartTimeChangeHandler = React.useCallback(
-        (event, newValue: string) => {
-            onTimeChange(newValue, parseNumberToTime(value[1]));
-        },
-        [onTimeChange, value]
-    );
+    const onCustomStartTimeChangeHandler = (event, newValue: string) => {
+        onTimeChange(newValue, parseNumberToTime(value[1]));
+    };
 
-    const onCustomEndTimeChangeHandler = React.useCallback(
-        (event, newValue: string) => {
-            onTimeChange(parseNumberToTime(value[0]), newValue);
-        },
-        [onTimeChange, value]
-    );
+    const onCustomEndTimeChangeHandler = (event, newValue: string) => {
+        onTimeChange(parseNumberToTime(value[0]), newValue);
+    };
 
     return (
         <div className={styles.timeSliderWrapper}>

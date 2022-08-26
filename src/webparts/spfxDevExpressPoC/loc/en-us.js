@@ -37,6 +37,17 @@ define([], function() {
     "BusinessHoursClosedButtonLabel": "Closed",
     "BusinessHoursWorkhoursLabel": "9am - 5pm",
     "BusinessHoursUpdateChangesButtonLabel": "Update Changes",
-    "BusinessHoursCancelButtonLabel": "Cancel"
+    "BusinessHoursCancelButtonLabel": "Cancel",
+    "SkillPerAgentTabLabel": "Skills",
+    "SkillPerAgentTableSkillLabel": "Skill",
+    "SkillPerAgentTableScoreLabel": "Score",
+    "SkillPerAgentTableAgentLabel": "Agent",
+    "SkillPerAgentTableNewUpload": "New",
+    "NewSkillDialogTitle": "New skill per agent",
+    "EditSkillDialogTitle": "Edit skill per agent",
+    "SkillPerAgentAgentDropdownLabel": "Agent",
+    "SkillPerAgentSkillDropdownLabel": "Skill",
+    "SkillPerAgentScoreSliderLabel": "Score",
+    "ShouldCheckSupervisorLabel": "Should check supervisor list"
   }
 });

@@ -1,11 +1,11 @@
 import * as React from "react";
 // eslint-disable-next-line import/named
 import { ITag, TagPicker } from "@fluentui/react/lib/Pickers";
+import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
 import SharePointService from "../services/SharePointService";
-import parseActiveSitesRespose from "../utils/parsers/parseActiveSitesResponse";
 
 import Tabs from "./Tabs/Tabs";
 import styles from "./SpfxDevExpressPoC.module.scss";
@@ -16,23 +16,40 @@ export interface ISpfxDevExpressPoCProps {
     sharePointService: SharePointService;
     disableCreateNewRecord: boolean;
     recordsTabLabel: string;
+    userEmail: string;
+    shouldCheckSupervisor: boolean;
 }
 
-const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sourceSite, sharePointService, disableCreateNewRecord, recordsTabLabel }) => {
+const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
+    libraryName,
+    sourceSite,
+    sharePointService,
+    disableCreateNewRecord,
+    recordsTabLabel,
+    userEmail,
+    shouldCheckSupervisor
+}) => {
     const [activeSites, setActiveSites] = React.useState<ITag[]>([]);
     const [activeSiteKey, setActiveSiteKey] = React.useState<string | number>();
+    const [loading, setLoading] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         sharePointService.activeSitesLibraryName = libraryName;
         sharePointService.activeSitesSiteUrl = sourceSite;
+        sharePointService.shouldCheckSupervisor = shouldCheckSupervisor;
         const pullActiveSites = async () => {
-            const sites = await sharePointService.getActiveSites(parseActiveSitesRespose);
+            try {
+                const sites = await sharePointService.getActiveSites(userEmail);
 
-            setActiveSites(sites);
+                setActiveSites(sites);
+                setLoading(false);
+            } catch (ex) {
+                setLoading(false);
+            }
         };
 
         pullActiveSites();
-    }, [sharePointService, libraryName, sourceSite]);
+    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor]);
 
     const listContainsTagList = (tag: ITag, tagList?: ITag[]) => {
         if (!tagList || !tagList.length || tagList.length === 0) {
@@ -62,17 +79,22 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({ libraryName, sou
     return (
         <div className={styles.wrapper}>
             <label htmlFor="tag-list-id">{strings.ActiveSitesDropdownLabel}</label>
-            <TagPicker
-                onChange={onActiveSiteChange}
-                itemLimit={1}
-                onEmptyResolveSuggestions={onEmptyPickerClick}
-                onResolveSuggestions={filterSuggestedTags}
-                getTextFromItem={getTextFromItem}
-                pickerSuggestionsProps={{ noResultsFoundText: "No sites found" }}
-                inputProps={{
-                    id: "tag-list-id"
-                }}
-            />
+            {loading ? (
+                <Spinner size={SpinnerSize.medium} />
+            ) : (
+                <TagPicker
+                    className=""
+                    onChange={onActiveSiteChange}
+                    itemLimit={1}
+                    onEmptyResolveSuggestions={onEmptyPickerClick}
+                    onResolveSuggestions={filterSuggestedTags}
+                    getTextFromItem={getTextFromItem}
+                    pickerSuggestionsProps={{ noResultsFoundText: "No sites found" }}
+                    inputProps={{
+                        id: "tag-list-id"
+                    }}
+                />
+            )}
             {activeSiteKey && (
                 <Tabs activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} recordsTabLabel={recordsTabLabel} />
             )}

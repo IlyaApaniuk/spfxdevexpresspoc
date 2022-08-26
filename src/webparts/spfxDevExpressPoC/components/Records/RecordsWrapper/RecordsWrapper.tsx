@@ -23,9 +23,13 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
 
     React.useEffect(() => {
         const loadRecords = async () => {
-            const data = await sharePointService.getRecords("AudioFiles");
+            try {
+                const data = await sharePointService.getRecords("AudioFiles");
 
-            setRecords(data);
+                setRecords(data);
+            } catch (ex) {
+                console.error(ex);
+            }
         };
 
         loadRecords();
@@ -42,6 +46,7 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
     }, []);
 
     const onShowDialog = React.useCallback(() => {
+        setEditableRecord(null);
         setHideDialog(false);
     }, []);
 

@@ -1,0 +1,20 @@
+.scoreSliderWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 5px;
+    width: 100%;
+
+    .textBox {
+        width: 100%;
+    }
+
+    .slider {
+        width: 100%;
+        // background-image: linear-gradient(to right, #333 5%, rgba(255, 255, 255, 0) 0%);
+        // background-position: bottom;
+        // background-size: 5% 5px;
+        // background-repeat: repeat-x;
+    }
+}

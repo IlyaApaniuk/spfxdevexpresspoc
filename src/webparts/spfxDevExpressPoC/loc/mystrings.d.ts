@@ -37,6 +37,17 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     BusinessHoursWorkhoursLabel: string;
     BusinessHoursUpdateChangesButtonLabel: string;
     BusinessHoursCancelButtonLabel: string;
+    SkillPerAgentTabLabel: string;
+    SkillPerAgentTableSkillLabel: string;
+    SkillPerAgentTableScoreLabel: string;
+    SkillPerAgentTableAgentLabel: string;
+    SkillPerAgentTableNewUpload: string;
+    NewSkillDialogTitle: string;
+    EditSkillDialogTitle: string;
+    SkillPerAgentAgentDropdownLabel: string;
+    SkillPerAgentSkillDropdownLabel: string;
+    SkillPerAgentScoreSliderLabel: string;
+    ShouldCheckSupervisorLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

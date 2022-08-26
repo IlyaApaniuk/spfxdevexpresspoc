@@ -114,23 +114,23 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, shareP
         }
     };
 
-    const onRecordingStart = React.useCallback(() => {
+    const onRecordingStart = () => {
         try {
             onReset();
             onStart();
         } catch (ex) {
             dispatch({ type: "setNotification", payload: { message: (ex as Error).message, status: false } });
         }
-    }, [onStart]);
+    };
 
-    const onDialogClose = React.useCallback(() => {
+    const onDialogClose = () => {
         onCancel();
         onReset();
         onClose();
-    }, [onClose, onCancel]);
+    };
 
-    const onRecordNameChange = React.useCallback((event, newValue?: string) => dispatch({ type: "setRecordName", payload: newValue }), []);
-    const onRecordFormatChange = React.useCallback((event, option?: IDropdownOption) => dispatch({ type: "setRecordFormat", payload: option }), []);
+    const onRecordNameChange = (event, newValue?: string) => dispatch({ type: "setRecordName", payload: newValue });
+    const onRecordFormatChange = (event, option?: IDropdownOption) => dispatch({ type: "setRecordFormat", payload: option });
     const onShowAudio = () => (editableRecord || state.blob) && status !== "recording";
     const getAudioSrc = () => {
         return editableRecord && status !== "recorded" ? editableRecord.url : state.blob && window.URL.createObjectURL(state.blob);
