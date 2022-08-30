@@ -359,7 +359,7 @@ export default class SharePointService {
                 try {
                     await this.getToken();
 
-                    const secondTryResponse = await fetch(url, { headers: { Accept: "application/json;odata=verbose", Authorization: `Bearer ${this.token}` } });
+                    const secondTryResponse = await fetch(url, { headers: { ...options.headers, Authorization: `Bearer ${this.token}` } });
 
                     data = await secondTryResponse.json();
                 } catch (e) {
