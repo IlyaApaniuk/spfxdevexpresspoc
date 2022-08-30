@@ -24,7 +24,7 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
     React.useEffect(() => {
         const loadRecords = async () => {
             try {
-                const data = await sharePointService.getRecords("AudioFiles");
+                const data = await sharePointService.getRecords();
 
                 setRecords(data);
             } catch (ex) {

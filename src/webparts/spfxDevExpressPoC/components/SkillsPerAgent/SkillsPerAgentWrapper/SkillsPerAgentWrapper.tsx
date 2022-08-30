@@ -6,7 +6,6 @@ import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
 import { IClientSkillItem } from "../../../models/skillsPerAgent/IClientSkillItem";
 import SharePointService from "../../../services/SharePointService";
-import parseSkillsPerAgentResponse from "../../../utils/parsers/parseSkillsPerAgentResponse";
 import SkillsPerAgentDialog from "../SkillsPerAgentDialog/SkillsPerAgentDialog";
 
 import styles from "./SkillsPerAgentWrapper.module.scss";
@@ -23,7 +22,7 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
     React.useEffect(() => {
         const loadSkills = async () => {
             try {
-                const data = await sharePointService.getListItems("SkillsPerAgent", parseSkillsPerAgentResponse);
+                const data = await sharePointService.getSkillPerAgentItems();
 
                 setSkills(data);
             } catch (ex) {
@@ -48,6 +47,14 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
         setHideDialog(true);
     }, []);
 
+    const agentCellRender = (settings: { data: IClientSkillItem }) => {
+        return settings.data.agent.value;
+    };
+
+    const skillCellRender = (settings: { data: IClientSkillItem }) => {
+        return settings.data.skill.value;
+    };
+
     return (
         <div className={styles.skillsWrapper}>
             <PrimaryButton text={strings.SkillPerAgentTableNewUpload} onClick={onShowDialog} />
@@ -57,8 +64,8 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
                 <Column type="buttons" width={50}>
                     <Button name="edit" onClick={onShowEditDialog} />
                 </Column>
-                <Column caption={strings.SkillPerAgentTableAgentLabel} dataField="agent" />
-                <Column caption={strings.SkillPerAgentTableSkillLabel} dataField="skill" />
+                <Column caption={strings.SkillPerAgentTableAgentLabel} cellRender={agentCellRender} />
+                <Column caption={strings.SkillPerAgentTableSkillLabel} cellRender={skillCellRender} />
                 <Column caption={strings.SkillPerAgentTableScoreLabel} alignment="left" dataField="score" defaultSortOrder="desc" />
                 <Paging defaultPageSize={10} />
             </DataGrid>

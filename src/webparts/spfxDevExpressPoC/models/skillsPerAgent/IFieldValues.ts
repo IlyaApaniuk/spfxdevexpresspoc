@@ -2,5 +2,6 @@
 import { IDropdownOption } from "@fluentui/react/lib/Dropdown";
 
 export interface IFieldValues {
-    [f: string]: IDropdownOption[];
+    agents: IDropdownOption[];
+    skills: IDropdownOption[];
 }

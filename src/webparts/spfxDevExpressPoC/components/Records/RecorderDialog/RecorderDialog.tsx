@@ -98,7 +98,7 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, shareP
         dispatch({ type: "uploadingStart" });
 
         const file = new File([state.blob], editableRecord ? editableRecord.label : `${state.recordName}.${state.recordFormat?.text}`);
-        const isUploaded = await sharePointService.uploadFile("AudioFiles", file, file.name);
+        const isUploaded = await sharePointService.uploadRecordFile(file, file.name);
 
         dispatch({
             type: "uploadingFinished",

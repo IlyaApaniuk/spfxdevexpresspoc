@@ -1,6 +1,11 @@
 export interface IClientSkillItem {
-    skill: string;
+    skill: ILookupField;
     score: number;
-    agent: string;
+    agent: ILookupField;
+    id: number;
+}
+
+export interface ILookupField {
+    value: string;
     id: number;
 }

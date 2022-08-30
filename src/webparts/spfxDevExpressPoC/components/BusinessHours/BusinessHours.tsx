@@ -5,7 +5,6 @@ import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
 import { IClientHourItem } from "../../models/businessHours/IClientHourItem";
 import SharePointService from "../../services/SharePointService";
-import parseBusinessHoursResponse from "../../utils/parsers/parseBusinessHoursResponse";
 import { parseTimeToNumber } from "../../utils/time/parseTime";
 import { updateItemsOnSelect, updateItemsOnUnselect } from "../../utils/time/updateItems";
 
@@ -28,7 +27,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
     React.useEffect(() => {
         const loadBusinessHoursItems = async () => {
             try {
-                const items = await sharePointService.getListItems<IClientHourItem[]>("Businesshours", parseBusinessHoursResponse);
+                const items = await sharePointService.getBusinessHours();
 
                 setBusinessHoursItems(items);
                 setChangedItems([...items]);
@@ -76,7 +75,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
     const onUploadChanges = async () => {
         try {
             setLoading({ type: "uploading" });
-            const uploaded = await sharePointService.updateBusinessHours("Businesshours", changedItems);
+            const uploaded = await sharePointService.updateBusinessHours(changedItems);
 
             setNotification({ message: uploaded ? "" : "", status: uploaded });
             setLoading(null);

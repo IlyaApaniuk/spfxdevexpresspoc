@@ -4,9 +4,9 @@ export default function parseSkillsPerAgentResponse(response: { value: unknown[]
     try {
         return response?.value?.map(s => {
             return {
-                skill: s["Skill"],
-                score: s["Score"],
-                agent: s["Agent"],
+                skill: { value: s["wsp_ucc_spa_skill"]?.Title, id: s["wsp_ucc_spa_skill"]?.Id },
+                score: s["wsp_ucc_Score"],
+                agent: { value: s["wsp_ucc_spa_Agent"]?.wsp_ucc_Agent, id: s["wsp_ucc_spa_Agent"]?.Id },
                 id: s["Id"]
             } as IClientSkillItem;
         });

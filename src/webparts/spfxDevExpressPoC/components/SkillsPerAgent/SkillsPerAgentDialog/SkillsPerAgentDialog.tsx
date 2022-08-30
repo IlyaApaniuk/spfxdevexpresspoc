@@ -8,10 +8,9 @@ import { Dropdown } from "@fluentui/react/lib/Dropdown";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
-import { IClientSkillItem } from "../../../models/skillsPerAgent/IClientSkillItem";
+import { IClientSkillItem, ILookupField } from "../../../models/skillsPerAgent/IClientSkillItem";
 import SharePointService from "../../../services/SharePointService";
 import { IFieldValues } from "../../../models/skillsPerAgent/IFieldValues";
-import parseSkillPerAgentFieldsResponse from "../../../utils/parsers/parseSkillPerAgentFieldsResponse";
 import ScoreSlider from "../ScoreSlider/ScoreSlider";
 
 import styles from "./SkillsPerAgentDialog.module.scss";
@@ -31,15 +30,15 @@ const dialogContentProps = {
 const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePointService, onClose, hideDialog, editableSkillItem }) => {
     const [status, setStatus] = React.useState<{ type: "loading" | "uploading" | "success" | "error"; message?: string } | null>(null);
     const [fieldValues, setFieldValues] = React.useState<IFieldValues | null>(null);
-    const [agent, setAgent] = React.useState<string | null>(editableSkillItem?.agent);
-    const [skill, setSkill] = React.useState<string | null>(editableSkillItem?.skill);
+    const [agent, setAgent] = React.useState<ILookupField | null>(editableSkillItem?.agent);
+    const [skill, setSkill] = React.useState<ILookupField | null>(editableSkillItem?.skill);
     const [score, setScore] = React.useState<number | null>(editableSkillItem?.score);
 
     React.useEffect(() => {
         const loadFieldValues = async () => {
             try {
                 setStatus({ type: "loading" });
-                const values = await sharePointService.getListFieldValues("SkillsPerAgent", ["Skill", "Agent"], parseSkillPerAgentFieldsResponse);
+                const values = await sharePointService.getSkillsPerAgentFieldValues();
 
                 setFieldValues(values);
                 setStatus(null);
@@ -65,7 +64,12 @@ const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePoint
     const uploadChanges = async () => {
         try {
             setStatus({ type: "uploading" });
-            const isUploaded = await sharePointService.updateSkillPerAgent("SkillsPerAgent", { id: editableSkillItem.id, agent, skill, score });
+            const isUploaded = await sharePointService.updateSkillPerAgent({
+                id: editableSkillItem.id,
+                agent: agent || editableSkillItem?.agent,
+                skill: skill || editableSkillItem?.skill,
+                score: score || editableSkillItem?.score
+            });
 
             setStatus({ type: isUploaded ? "success" : "error" });
             onReset();
@@ -78,7 +82,12 @@ const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePoint
     const uploadNewItem = async () => {
         try {
             setStatus({ type: "uploading" });
-            const isUploaded = await sharePointService.createSkillPerAgentItem("SkillsPerAgent", { agent, skill, score, id: -1 });
+            const isUploaded = await sharePointService.createSkillPerAgentItem({
+                id: -1,
+                agent: agent || editableSkillItem?.agent,
+                skill: skill || editableSkillItem?.skill,
+                score: score || editableSkillItem?.score
+            });
 
             setStatus({ type: isUploaded ? "success" : "error" });
             onReset();
@@ -116,17 +125,17 @@ const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePoint
                 <div className={styles.controlsWrapper}>
                     <Dropdown
                         className={styles.dropdown}
-                        options={fieldValues?.["Agent"]}
-                        selectedKey={agent || editableSkillItem?.agent}
+                        options={fieldValues?.agents}
+                        selectedKey={agent?.value || editableSkillItem?.agent?.value}
                         label={strings.SkillPerAgentAgentDropdownLabel}
-                        onChange={(event, option) => setAgent(option.text)}
+                        onChange={(event, option) => setAgent({ value: option.text, id: option.data })}
                     />
                     <Dropdown
                         className={styles.dropdown}
-                        options={fieldValues?.["Skill"]}
-                        selectedKey={skill || editableSkillItem?.skill}
+                        options={fieldValues?.skills}
+                        selectedKey={skill?.value || editableSkillItem?.skill?.value}
                         label={strings.SkillPerAgentSkillDropdownLabel}
-                        onChange={(event, option) => setSkill(option.text)}
+                        onChange={(event, option) => setSkill({ value: option.text, id: option.data })}
                     />
                     <ScoreSlider onChange={data => setScore(data)} initValue={score || editableSkillItem?.score} />
                 </div>

@@ -1,15 +1,11 @@
-// eslint-disable-next-line import/named
-import { IDropdownOption } from "@fluentui/react/lib/Dropdown";
-
 import { IFieldValues } from "../../models/skillsPerAgent/IFieldValues";
 
-export default function parseSkillPerAgentFieldsResponse(response: { value: unknown[] }): IFieldValues {
+export default function parseSkillPerAgentFieldsResponse(agents: { value: unknown[] }, skills: { value: unknown[] }): IFieldValues {
     try {
-        const values: IFieldValues = {};
-
-        response?.value?.forEach(field => {
-            values[field["InternalName"]] = field["Choices"]?.map(c => ({ key: c, text: c } as IDropdownOption));
-        });
+        const values: IFieldValues = {
+            agents: agents.value.map(a => ({ key: a["wsp_ucc_Agent"], text: a["wsp_ucc_Agent"], data: a["Id"] })),
+            skills: skills.value.map(s => ({ key: s["Title"], text: s["Title"], data: s["Id"] }))
+        };
 
         return values;
     } catch (ex) {
