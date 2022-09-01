@@ -48,6 +48,7 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     SkillPerAgentSkillDropdownLabel: string;
     SkillPerAgentScoreSliderLabel: string;
     ShouldCheckSupervisorLabel: string;
+    UseEscalatedSecuritySettingsLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

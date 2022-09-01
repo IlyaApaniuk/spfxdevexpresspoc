@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/named
 import { ITag } from "@fluentui/react/lib/Pickers";
 
-export default function parseActiveSitesRespose(response: { d: { results: unknown[] } }, sites?: string[]): ITag[] {
+export default function parseActiveSitesRespose(response: { value: unknown[] }, sites?: string[]): ITag[] {
     try {
-        const values = sites === undefined ? response.d.results : response.d.results.filter(v => sites.indexOf(v["A365_SiteURL"]?.Url) >= 0);
+        const values = sites === undefined ? response.value : response.value.filter(v => sites.indexOf(v["A365_SiteURL"]?.Url) >= 0);
 
         return values.map(site => {
             return {

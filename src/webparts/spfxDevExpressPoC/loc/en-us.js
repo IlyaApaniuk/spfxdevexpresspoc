@@ -48,6 +48,7 @@ define([], function() {
     "SkillPerAgentAgentDropdownLabel": "Agent",
     "SkillPerAgentSkillDropdownLabel": "Skill",
     "SkillPerAgentScoreSliderLabel": "Score",
-    "ShouldCheckSupervisorLabel": "Should check supervisor list"
+    "ShouldCheckSupervisorLabel": "Should check supervisor list",
+    "UseEscalatedSecuritySettingsLabel": "Use escalated security"
   }
 });

@@ -47,26 +47,19 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
         setHideDialog(true);
     }, []);
 
-    const agentCellRender = (settings: { data: IClientSkillItem }) => {
-        return settings.data.agent.value;
-    };
-
-    const skillCellRender = (settings: { data: IClientSkillItem }) => {
-        return settings.data.skill.value;
-    };
-
     return (
         <div className={styles.skillsWrapper}>
             <PrimaryButton text={strings.SkillPerAgentTableNewUpload} onClick={onShowDialog} />
             <DataGrid allowColumnReordering rowAlternationEnabled dataSource={skills} showBorders remoteOperations>
                 <SearchPanel visible />
                 <Editing allowUpdating />
+                <Column dataField="id" visible={false} defaultSortOrder="desc" />
                 <Column type="buttons" width={50}>
                     <Button name="edit" onClick={onShowEditDialog} />
                 </Column>
-                <Column caption={strings.SkillPerAgentTableAgentLabel} cellRender={agentCellRender} />
-                <Column caption={strings.SkillPerAgentTableSkillLabel} cellRender={skillCellRender} />
-                <Column caption={strings.SkillPerAgentTableScoreLabel} alignment="left" dataField="score" defaultSortOrder="desc" />
+                <Column caption={strings.SkillPerAgentTableAgentLabel} dataField="agent.value" />
+                <Column caption={strings.SkillPerAgentTableSkillLabel} dataField="skill.value" />
+                <Column caption={strings.SkillPerAgentTableScoreLabel} alignment="left" dataField="score" />
                 <Paging defaultPageSize={10} />
             </DataGrid>
             <SkillsPerAgentDialog editableSkillItem={editableSkillItem} sharePointService={sharePointService} hideDialog={hideDialog} onClose={onHideDialog} />

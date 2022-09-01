@@ -38,6 +38,8 @@ export default class SharePointService {
 
     public activeSiteUrl: string;
 
+    public useEscalatedSecurity: boolean;
+
     private spHttpClient: SPHttpClient;
 
     private pageContext: PageContext;
@@ -59,7 +61,7 @@ export default class SharePointService {
                 sites = await this.checkSupervisorLists(userEmail);
             }
 
-            const items: { d: { results: unknown[] } } = await this.getListItems(this.getActiveSitesUrlBuilder());
+            const items: { value: unknown[] } = await this.getListItems(this.getActiveSitesUrlBuilder());
 
             return parseActiveSitesRespose(items, this.shouldCheckSupervisor ? sites : undefined);
         } catch (ex) {
@@ -231,43 +233,65 @@ export default class SharePointService {
 
     private async getListItems<T>(url: string, converter?: (response: { value: unknown[] }) => T): Promise<T> {
         try {
-            const response = await this.callWrapper<{ value: unknown[] }>(url, {
-                method: "GET",
-                headers: {
-                    Accept: "application/json"
-                }
-            });
+            const headers: HeadersInit = {
+                Accept: "application/json"
+            };
 
-            return converter ? converter(response) : (response as unknown as T);
+            let values: { value: unknown[] } = { value: [] };
+
+            if (this.useEscalatedSecurity) {
+                const response = await this.callWrapper<{ value: unknown[] }>(url, {
+                    method: "GET",
+                    headers
+                });
+
+                values = response;
+            } else {
+                const response = await this.spHttpClient.get(url, SPHttpClient.configurations.v1, { headers });
+
+                const items = await response.json();
+
+                values = items;
+            }
+
+            return converter ? converter(values) : (values as unknown as T);
         } catch (ex) {
             throw ex;
         }
     }
 
     private async createListItem(url: string, body: BodyInit): Promise<unknown> {
-        const response = this.callWrapper(url, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            },
-            body
-        });
+        const headers: HeadersInit = {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        };
+
+        const response = this.useEscalatedSecurity
+            ? this.callWrapper(url, {
+                  method: "POST",
+                  headers,
+                  body
+              })
+            : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
     }
 
     private updateListItems(url: string, body: string): Promise<unknown> {
-        const response = this.callWrapper(url, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "If-Match": "*",
-                "X-HTTP-Method": "MERGE"
-            },
-            body
-        });
+        const headers: HeadersInit = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "If-Match": "*",
+            "X-HTTP-Method": "MERGE"
+        };
+
+        const response = this.useEscalatedSecurity
+            ? this.callWrapper(url, {
+                  method: "POST",
+                  headers,
+                  body
+              })
+            : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
     }

@@ -18,6 +18,7 @@ export interface ISpfxDevExpressPoCProps {
     recordsTabLabel: string;
     userEmail: string;
     shouldCheckSupervisor: boolean;
+    useEscalatedSecurity: boolean;
 }
 
 const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
@@ -27,7 +28,8 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
     disableCreateNewRecord,
     recordsTabLabel,
     userEmail,
-    shouldCheckSupervisor
+    shouldCheckSupervisor,
+    useEscalatedSecurity
 }) => {
     const [activeSites, setActiveSites] = React.useState<ITag[]>([]);
     const [activeSiteKey, setActiveSiteKey] = React.useState<string | number>();
@@ -37,6 +39,7 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
         sharePointService.activeSitesLibraryName = libraryName;
         sharePointService.activeSitesSiteUrl = sourceSite;
         sharePointService.shouldCheckSupervisor = shouldCheckSupervisor;
+        sharePointService.useEscalatedSecurity = useEscalatedSecurity;
         const pullActiveSites = async () => {
             try {
                 const sites = await sharePointService.getActiveSites(userEmail);
@@ -49,7 +52,7 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
         };
 
         pullActiveSites();
-    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor]);
+    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor, useEscalatedSecurity]);
 
     const listContainsTagList = (tag: ITag, tagList?: ITag[]) => {
         if (!tagList || !tagList.length || tagList.length === 0) {

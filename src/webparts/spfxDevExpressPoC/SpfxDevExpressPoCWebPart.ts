@@ -17,6 +17,7 @@ export interface ISpfxDevExpressPoCWebPartProps {
     disableCreateNewRecord: boolean;
     recordsTabLabel: string;
     shouldCheckSupervisor: boolean;
+    useEscalatedSecurity: boolean;
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -30,7 +31,8 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
             sharePointService: this.sharePointService,
             recordsTabLabel: this.properties.recordsTabLabel,
             userEmail: this.context.pageContext.user.email,
-            shouldCheckSupervisor: this.properties.shouldCheckSupervisor
+            shouldCheckSupervisor: this.properties.shouldCheckSupervisor,
+            useEscalatedSecurity: this.properties.useEscalatedSecurity
         });
 
         ReactDom.render(element, this.domElement);
@@ -84,6 +86,10 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneToggle("shouldCheckSupervisor", {
                                     label: strings.ShouldCheckSupervisorLabel,
                                     checked: this.properties.shouldCheckSupervisor
+                                }),
+                                PropertyPaneToggle("useEscalatedSecurity", {
+                                    label: strings.UseEscalatedSecuritySettingsLabel,
+                                    checked: this.properties.useEscalatedSecurity
                                 })
                             ]
                         },
