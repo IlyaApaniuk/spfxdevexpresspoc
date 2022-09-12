@@ -8,24 +8,12 @@
         align-items: flex-start;
         gap: 15px;
 
-        .recordNameTextField {
-            width: 180px;
-        }
-
         .recorderControls {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
             align-items: center;
             gap: 10px;
-        }
-
-        .recordName {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 5px;
         }
     }
 

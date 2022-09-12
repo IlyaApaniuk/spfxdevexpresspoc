@@ -2,9 +2,8 @@ import * as React from "react";
 import { Dialog, DialogType, DialogFooter } from "@fluentui/react/lib/Dialog";
 import { DefaultButton, PrimaryButton } from "@fluentui/react/lib/Button";
 import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
-import { TextField } from "@fluentui/react/lib/TextField";
 // eslint-disable-next-line import/named
-import { Dropdown, IDropdownOption } from "@fluentui/react/lib/Dropdown";
+import { IDropdownOption } from "@fluentui/react/lib/Dropdown";
 // eslint-disable-next-line import/no-unresolved
 import * as strings from "SpfxDevExpressPoCWebPartStrings";
 
@@ -14,6 +13,8 @@ import Timer from "../Timer/Timer";
 import { IRecord } from "../../../models/records/IRecord";
 
 import styles from "./RecorderDialog.module.scss";
+import Controls from "./Controls/Controls";
+import Audio from "./Audio/Audio";
 
 export interface IRecorderDialogProps {
     sharePointService: SharePointService;
@@ -26,11 +27,6 @@ const dialogContentProps = {
     type: DialogType.normal,
     showCloseButton: true
 };
-
-const audioTypes: IDropdownOption[] = [
-    { key: "wav", text: "wav" },
-    { key: "mp3", text: "mp3" }
-];
 
 interface IRecorderDialogState {
     blob: Blob | null;
@@ -98,7 +94,7 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, shareP
         dispatch({ type: "uploadingStart" });
 
         const file = new File([state.blob], editableRecord ? editableRecord.label : `${state.recordName}.${state.recordFormat?.text}`);
-        const isUploaded = await sharePointService.uploadRecordFile(file, file.name);
+        const isUploaded = await sharePointService.uploadRecordFile(file, file.name, editableRecord?.id);
 
         dispatch({
             type: "uploadingFinished",
@@ -176,16 +172,14 @@ const RecorderDialog: React.FC<IRecorderDialogProps> = ({ editableRecord, shareP
                         <DefaultButton disabled={status === "recorded" || status === "idle"} onClick={onStop} text={strings.StopRecordLabel} />
                     </div>
                     {status !== "idle" && status !== "recorded" && <Timer time={time} />}
-                    {onShowAudio() && (
-                        <audio src={getAudioSrc()} controls preload="auto">
-                            <track kind="captions" />
-                        </audio>
-                    )}
+                    {onShowAudio() && <Audio getAudioSrc={getAudioSrc} />}
                     {!editableRecord && (
-                        <div className={styles.recordName}>
-                            <TextField className={styles.recordNameTextField} label={strings.RecordNameTextFieldLabel} value={state.recordName} onChange={onRecordNameChange} />
-                            <Dropdown options={audioTypes} selectedKey={state.recordFormat?.key} label={strings.RecordFormatDropdownLabel} onChange={onRecordFormatChange} />
-                        </div>
+                        <Controls
+                            recordFormat={state.recordFormat}
+                            recordName={state.recordName}
+                            onRecordNameChange={onRecordNameChange}
+                            onRecordFormatChange={onRecordFormatChange}
+                        />
                     )}
                     {state.notification?.message && <div className={state.notification.status ? styles.success : styles.error}>{state.notification.message}</div>}
                 </div>

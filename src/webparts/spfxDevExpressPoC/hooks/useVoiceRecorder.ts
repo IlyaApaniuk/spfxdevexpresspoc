@@ -63,15 +63,11 @@ const useVoiceRecorder = (callback: (blob: Blob) => void) => {
         };
     }, [state.status]);
 
-    const finishRecording = React.useCallback(
-        mimeType => {
-            const audioBlob = new Blob(chunks.current, { type: mimeType });
+    const finishRecording = mimeType => {
+        const audioBlob = new Blob(chunks.current, { type: mimeType });
 
-            callback(audioBlob);
-        },
-        [callback]
-    );
-
+        callback(audioBlob);
+    };
     const onTimeReset = () => {
         setTime(0);
         currentTime.current = 0;
