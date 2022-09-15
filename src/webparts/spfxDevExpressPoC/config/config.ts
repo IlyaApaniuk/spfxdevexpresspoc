@@ -1,9 +1,10 @@
 const config = {
-    permissionsApi: {
+    permissionsApiUrls: {
         baseUrl: "https://sharepointpermissionsresolver.azurewebsites.net",
         getListItems: "api/Permissions/items/get",
         createListItem: "api/Permissions/items/create",
         updateListItem: "api/Permissions/items/update",
+        searchListItems: "api/Permissions/items/search",
         getDriveItems: "api/Permissions/drives/get",
         uploadDriveItem: "api/Permissions/drives/upload"
     },
@@ -57,8 +58,8 @@ const config = {
     }
 };
 
-export function getPermissionsApi(path: string): string {
-    return `${config.permissionsApi.baseUrl}/${path}`;
+export function buildPermissionsApiUrl(path: string): string {
+    return `${config.permissionsApiUrls.baseUrl}/${path}`;
 }
 
 export default config;

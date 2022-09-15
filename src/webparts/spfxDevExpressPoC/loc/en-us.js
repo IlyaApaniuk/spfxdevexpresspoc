@@ -49,6 +49,8 @@ define([], function() {
     "SkillPerAgentSkillDropdownLabel": "Skill",
     "SkillPerAgentScoreSliderLabel": "Score",
     "ShouldCheckSupervisorLabel": "Should check supervisor list",
-    "UseEscalatedSecuritySettingsLabel": "Use escalated security"
+    "UseEscalatedSecuritySettingsLabel": "Use escalated security",
+    "SpfxPassPropertyPaneLabel": "Enter spfx pass",
+    "SpfxTokenPropertyPaneLabel": "Enter sfpx token"
   }
 });

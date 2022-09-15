@@ -19,6 +19,9 @@ export interface ISpfxDevExpressPoCProps {
     userEmail: string;
     shouldCheckSupervisor: boolean;
     useEscalatedSecurity: boolean;
+    spfxPass: string;
+    spfxToken: string;
+    isEditMode: boolean;
 }
 
 const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
@@ -29,7 +32,10 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
     recordsTabLabel,
     userEmail,
     shouldCheckSupervisor,
-    useEscalatedSecurity
+    useEscalatedSecurity,
+    spfxPass,
+    spfxToken,
+    isEditMode
 }) => {
     const [activeSites, setActiveSites] = React.useState<ITag[]>([]);
     const [activeSiteKey, setActiveSiteKey] = React.useState<string | number>();
@@ -40,6 +46,8 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
         sharePointService.activeSitesSiteUrl = sourceSite;
         sharePointService.shouldCheckSupervisor = shouldCheckSupervisor;
         sharePointService.useEscalatedSecurity = useEscalatedSecurity;
+        sharePointService.spfxPass = spfxPass;
+        sharePointService.spfxToken = spfxToken;
         const pullActiveSites = async () => {
             try {
                 const sites = await sharePointService.getActiveSites(userEmail);
@@ -51,8 +59,8 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
             }
         };
 
-        pullActiveSites();
-    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor, useEscalatedSecurity]);
+        !isEditMode && pullActiveSites();
+    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor, useEscalatedSecurity, spfxPass, spfxToken, isEditMode]);
 
     const listContainsTagList = (tag: ITag, tagList?: ITag[]) => {
         if (!tagList || !tagList.length || tagList.length === 0) {

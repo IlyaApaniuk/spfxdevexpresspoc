@@ -2,7 +2,7 @@ import { ServiceKey, ServiceScope } from "@microsoft/sp-core-library";
 import { ISPHttpClientOptions, SPHttpClient } from "@microsoft/sp-http";
 import { PageContext } from "@microsoft/sp-page-context";
 
-import config, { getPermissionsApi } from "../config/config";
+import config, { buildPermissionsApiUrl } from "../config/config";
 import { IClientHourItem } from "../models/businessHours/IClientHourItem";
 import { IServerHourItem } from "../models/businessHours/IServerHourItem";
 import { IRecord } from "../models/records/IRecord";
@@ -39,6 +39,10 @@ export default class SharePointService {
 
     public useEscalatedSecurity: boolean;
 
+    public spfxPass: string;
+
+    public spfxToken: string;
+
     private spHttpClient: SPHttpClient;
 
     private pageContext: PageContext;
@@ -70,6 +74,7 @@ export default class SharePointService {
 
     private async checkSupervisorLists(userEmail: string): Promise<string[]> {
         try {
+            debugger;
             const headers: HeadersInit = {
                 Accept: "application/json"
             };
@@ -77,8 +82,16 @@ export default class SharePointService {
             let url = this.searchSupervisorByEmailQuery(userEmail);
 
             while (true) {
-                const response = await this.spHttpClient.get(url, SPHttpClient.configurations.v1, { headers });
-                const supervisors: ISearchResults = await response.json();
+                let supervisors: ISearchResults;
+
+                if (this.useEscalatedSecurity) {
+                    supervisors = await this.callAzureService<ISearchResults>(buildPermissionsApiUrl(config.permissionsApiUrls.searchListItems), url, "");
+                } else {
+                    const response = await this.spHttpClient.get(url, SPHttpClient.configurations.v1, { headers });
+
+                    supervisors = await response.json();
+                }
+
                 const results = supervisors.PrimaryQueryResult.RelevantResults.Table.Rows;
 
                 sites.push(...parseSearchResults(results));
@@ -244,7 +257,13 @@ export default class SharePointService {
 
     private async getDriveItems<T>(url: string, driveName: string, converter?: (response: { value: unknown[] }) => T) {
         try {
-            const items = await this.callAzureService<{ value: unknown[] }>(getPermissionsApi(config.permissionsApi.getDriveItems), url, this.activeSiteUrl, undefined, driveName);
+            const items = await this.callAzureService<{ value: unknown[] }>(
+                buildPermissionsApiUrl(config.permissionsApiUrls.getDriveItems),
+                url,
+                this.activeSiteUrl,
+                undefined,
+                driveName
+            );
 
             return converter ? converter(items) : (items as unknown as T);
         } catch (ex) {
@@ -253,7 +272,7 @@ export default class SharePointService {
     }
 
     private async uploadDriveItem(url: string, file: File, driveName: string): Promise<boolean> {
-        const response = await this.callAzureService<boolean>(getPermissionsApi(config.permissionsApi.uploadDriveItem), url, this.activeSiteUrl, file, driveName);
+        const response = await this.callAzureService<boolean>(buildPermissionsApiUrl(config.permissionsApiUrls.uploadDriveItem), url, this.activeSiteUrl, file, driveName);
 
         return response;
     }
@@ -268,7 +287,7 @@ export default class SharePointService {
 
             if (this.useEscalatedSecurity) {
                 const response = await this.callAzureService<{ value: unknown[] }>(
-                    getPermissionsApi(config.permissionsApi.getListItems),
+                    buildPermissionsApiUrl(config.permissionsApiUrls.getListItems),
                     url,
                     isActiveSites ? this.activeSitesSiteUrl : this.activeSiteUrl
                 );
@@ -295,7 +314,7 @@ export default class SharePointService {
         };
 
         const response = this.useEscalatedSecurity
-            ? this.callAzureService(getPermissionsApi(config.permissionsApi.createListItem), url, this.activeSiteUrl, body)
+            ? this.callAzureService(buildPermissionsApiUrl(config.permissionsApiUrls.createListItem), url, this.activeSiteUrl, body)
             : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
@@ -310,7 +329,7 @@ export default class SharePointService {
         };
 
         const response = this.useEscalatedSecurity
-            ? this.callAzureService(getPermissionsApi(config.permissionsApi.updateListItem), url, this.activeSiteUrl, body)
+            ? this.callAzureService(buildPermissionsApiUrl(config.permissionsApiUrls.updateListItem), url, this.activeSiteUrl, body)
             : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
@@ -438,31 +457,26 @@ export default class SharePointService {
                 "Content-Type": "application/json"
             };
 
+            const mandatoryParams = {
+                rootPath: this.pageContext.legacyPageContext.portalUrl.replace("https://", "").replace("/", ""),
+                serverRelativePath: `/${serverRelativePath.replace(this.pageContext.legacyPageContext.portalUrl, "")}`,
+                apiUrl: graphApiUrl,
+                spfxPass: this.spfxPass,
+                spfxToken: this.spfxToken,
+                driveName
+            };
+
             let body;
 
             if (data instanceof File) {
                 const formData = new FormData();
 
                 formData.append("file", data);
-                formData.append(
-                    "request",
-                    JSON.stringify({
-                        rootPath: this.pageContext.legacyPageContext.portalUrl.replace("https://", "").replace("/", ""),
-                        serverRelativePath: `/${serverRelativePath.replace(this.pageContext.legacyPageContext.portalUrl, "")}`,
-                        apiUrl: graphApiUrl,
-                        driveName
-                    })
-                );
+                formData.append("request", JSON.stringify(mandatoryParams));
 
                 body = formData;
             } else {
-                body = JSON.stringify({
-                    rootPath: this.pageContext.legacyPageContext.portalUrl.replace("https://", "").replace("/", ""),
-                    serverRelativePath: `/${serverRelativePath.replace(this.pageContext.legacyPageContext.portalUrl, "")}`,
-                    apiUrl: graphApiUrl,
-                    driveName,
-                    data
-                });
+                body = JSON.stringify({ ...mandatoryParams, data });
             }
 
             const response = await fetch(url, { method: "POST", headers: data instanceof File ? undefined : headers, body });

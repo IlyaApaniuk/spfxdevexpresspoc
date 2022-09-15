@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
-import { Version } from "@microsoft/sp-core-library";
+import { DisplayMode, Version } from "@microsoft/sp-core-library";
 import { IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneToggle } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 // eslint-disable-next-line import/no-unresolved
@@ -18,6 +18,8 @@ export interface ISpfxDevExpressPoCWebPartProps {
     recordsTabLabel: string;
     shouldCheckSupervisor: boolean;
     useEscalatedSecurity: boolean;
+    spfxPass: string;
+    spfxToken: string;
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -32,7 +34,10 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
             recordsTabLabel: this.properties.recordsTabLabel,
             userEmail: this.context.pageContext.user.email,
             shouldCheckSupervisor: this.properties.shouldCheckSupervisor,
-            useEscalatedSecurity: this.properties.useEscalatedSecurity
+            useEscalatedSecurity: this.properties.useEscalatedSecurity,
+            spfxPass: this.properties.spfxPass,
+            spfxToken: this.properties.spfxToken,
+            isEditMode: this.displayMode == DisplayMode.Edit
         });
 
         ReactDom.render(element, this.domElement);
@@ -90,6 +95,14 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneToggle("useEscalatedSecurity", {
                                     label: strings.UseEscalatedSecuritySettingsLabel,
                                     checked: this.properties.useEscalatedSecurity
+                                }),
+                                PropertyPaneTextField("spfxPass", {
+                                    label: strings.SpfxPassPropertyPaneLabel,
+                                    value: this.properties.spfxPass
+                                }),
+                                PropertyPaneTextField("spfxToken", {
+                                    label: strings.SpfxTokenPropertyPaneLabel,
+                                    value: this.properties.spfxToken
                                 })
                             ]
                         },
