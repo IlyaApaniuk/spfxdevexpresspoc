@@ -1,6 +1,6 @@
 const config = {
     permissionsApiUrls: {
-        baseUrl: "https://sharepointpermissionsresolver.azurewebsites.net",
+        baseUrl: "https://localhost:7097",
         getListItems: "api/Permissions/items/get",
         createListItem: "api/Permissions/items/create",
         updateListItem: "api/Permissions/items/update",

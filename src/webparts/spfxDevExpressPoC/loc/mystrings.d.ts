@@ -49,7 +49,6 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     SkillPerAgentScoreSliderLabel: string;
     ShouldCheckSupervisorLabel: string;
     UseEscalatedSecuritySettingsLabel: string;
-    SpfxPassPropertyPaneLabel: string;
     SpfxTokenPropertyPaneLabel: string;
 }
 

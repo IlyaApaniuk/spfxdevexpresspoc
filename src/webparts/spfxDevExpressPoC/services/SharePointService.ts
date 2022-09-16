@@ -39,8 +39,6 @@ export default class SharePointService {
 
     public useEscalatedSecurity: boolean;
 
-    public spfxPass: string;
-
     public spfxToken: string;
 
     private spHttpClient: SPHttpClient;
@@ -461,7 +459,6 @@ export default class SharePointService {
                 rootPath: this.pageContext.legacyPageContext.portalUrl.replace("https://", "").replace("/", ""),
                 serverRelativePath: `/${serverRelativePath.replace(this.pageContext.legacyPageContext.portalUrl, "")}`,
                 apiUrl: graphApiUrl,
-                spfxPass: this.spfxPass,
                 spfxToken: this.spfxToken,
                 driveName
             };
@@ -482,7 +479,11 @@ export default class SharePointService {
             const response = await fetch(url, { method: "POST", headers: data instanceof File ? undefined : headers, body });
             const content = await response.json();
 
-            return JSON.parse(content);
+            if (response.ok) {
+                return JSON.parse(content);
+            } else {
+                throw new Error(content);
+            }
         } catch (e) {
             throw e;
         }

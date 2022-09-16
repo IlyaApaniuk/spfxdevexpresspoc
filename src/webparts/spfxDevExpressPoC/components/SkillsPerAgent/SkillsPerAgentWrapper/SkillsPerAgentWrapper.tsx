@@ -18,6 +18,7 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
     const [skills, setSkills] = React.useState<IClientSkillItem[]>([]);
     const [hideDialog, setHideDialog] = React.useState<boolean>(true);
     const [editableSkillItem, setEditableSkillItem] = React.useState<IClientSkillItem | null>(null);
+    const [lastUpdate, setLastUpdate] = React.useState<number>(0);
 
     React.useEffect(() => {
         const loadSkills = async () => {
@@ -31,7 +32,7 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
         };
 
         loadSkills();
-    }, [sharePointService, hideDialog]);
+    }, [sharePointService, lastUpdate, hideDialog]);
 
     const onShowDialog = React.useCallback(() => {
         setEditableSkillItem(null);
@@ -43,9 +44,10 @@ const SkillsPerAgentWrapper: React.FC<ISkillsPerAgentWrapperProps> = ({ sharePoi
         setHideDialog(false);
     }, []);
 
-    const onHideDialog = React.useCallback(() => {
+    const onHideDialog = () => {
         setHideDialog(true);
-    }, []);
+        setLastUpdate(lastUpdate + 1);
+    };
 
     return (
         <div className={styles.skillsWrapper}>

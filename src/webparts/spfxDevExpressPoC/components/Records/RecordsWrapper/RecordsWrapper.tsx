@@ -20,6 +20,7 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
     const [hideDialog, setHideDialog] = React.useState<boolean>(true);
     const [records, setRecords] = React.useState<IRecord[]>([]);
     const [editableRecord, setEditableRecord] = React.useState<IRecord | null>(null);
+    const [lastUpdate, setLastUpdate] = React.useState<number>(0);
 
     React.useEffect(() => {
         const loadRecords = async () => {
@@ -33,7 +34,7 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
         };
 
         loadRecords();
-    }, [sharePointService, hideDialog, activeSiteKey]);
+    }, [sharePointService, lastUpdate, activeSiteKey]);
 
     const recordCellRender = (settings: { data: IRecord }) => {
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -50,9 +51,10 @@ const RecordsWrapper: React.FC<IRecordsWrapperProps> = ({ activeSiteKey, disable
         setHideDialog(false);
     }, []);
 
-    const onHideDialog = React.useCallback(() => {
+    const onHideDialog = () => {
         setHideDialog(true);
-    }, []);
+        setLastUpdate(lastUpdate + 1);
+    };
 
     return (
         <div className={styles.recordsWrapper}>

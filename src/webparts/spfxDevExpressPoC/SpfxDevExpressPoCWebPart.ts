@@ -18,7 +18,6 @@ export interface ISpfxDevExpressPoCWebPartProps {
     recordsTabLabel: string;
     shouldCheckSupervisor: boolean;
     useEscalatedSecurity: boolean;
-    spfxPass: string;
     spfxToken: string;
 }
 
@@ -35,7 +34,6 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
             userEmail: this.context.pageContext.user.email,
             shouldCheckSupervisor: this.properties.shouldCheckSupervisor,
             useEscalatedSecurity: this.properties.useEscalatedSecurity,
-            spfxPass: this.properties.spfxPass,
             spfxToken: this.properties.spfxToken,
             isEditMode: this.displayMode == DisplayMode.Edit
         });
@@ -95,10 +93,6 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneToggle("useEscalatedSecurity", {
                                     label: strings.UseEscalatedSecuritySettingsLabel,
                                     checked: this.properties.useEscalatedSecurity
-                                }),
-                                PropertyPaneTextField("spfxPass", {
-                                    label: strings.SpfxPassPropertyPaneLabel,
-                                    value: this.properties.spfxPass
                                 }),
                                 PropertyPaneTextField("spfxToken", {
                                     label: strings.SpfxTokenPropertyPaneLabel,

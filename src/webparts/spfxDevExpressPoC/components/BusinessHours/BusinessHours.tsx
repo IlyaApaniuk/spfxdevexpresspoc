@@ -23,6 +23,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
     const [notification, setNotification] = React.useState<{ message: string; status: boolean } | null>(null);
     const [loading, setLoading] = React.useState<{ type: "loading" | "uploading" } | null>({ type: "loading" });
     const [selectedDays, setSelectedDays] = React.useState<number[]>([]);
+    const [lastUpdate, setLastUpdate] = React.useState<number>(0);
 
     React.useEffect(() => {
         const loadBusinessHoursItems = async () => {
@@ -40,7 +41,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
         };
 
         loadBusinessHoursItems();
-    }, [sharePointService, loading, activeSiteKey]);
+    }, [sharePointService, lastUpdate, activeSiteKey]);
 
     const onSelectedDayChange = (id: number, checked: boolean) => {
         if (checked) {
@@ -80,6 +81,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
             setNotification({ message: uploaded ? "" : "", status: uploaded });
             setLoading(null);
             setSelectedDays([]);
+            setLastUpdate(lastUpdate + 1);
         } catch (ex) {
             setLoading(null);
             setNotification({ message: strings.BusinessHoursErrorLable, status: false });
