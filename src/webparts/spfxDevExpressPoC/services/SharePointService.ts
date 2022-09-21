@@ -11,10 +11,10 @@ import { IClientSkillItem } from "../models/skillsPerAgent/IClientSkillItem";
 import { IFieldValues } from "../models/skillsPerAgent/IFieldValues";
 import parseActiveSitesRespose from "../utils/parsers/parseActiveSitesResponse";
 import parseBusinessHoursResponse from "../utils/parsers/parseBusinessHoursResponse";
-import { parseRecordsResponse, parseRecordsResponseUseEscalationSecurity } from "../utils/parsers/parseRecordsResponse";
+import { parseRecordsResponse } from "../utils/parsers/parseRecordsResponse";
 import parseSearchResults from "../utils/parsers/parseSearchResults";
 import parseSkillPerAgentFieldsResponse from "../utils/parsers/parseSkillPerAgentFieldsResponse";
-import { parseSkillsPerAgentResponse, parseSkillsPerAgentResponseUseEscalationSecurity } from "../utils/parsers/parseSkillsPerAgentResponse";
+import { parseSkillsPerAgentResponse } from "../utils/parsers/parseSkillsPerAgentResponse";
 
 export default class SharePointService {
     public static readonly serviceKey = ServiceKey.create<SharePointService>("voice-recorder:UploadService", SharePointService);
@@ -40,6 +40,8 @@ export default class SharePointService {
     public useEscalatedSecurity: boolean;
 
     public spfxToken: string;
+
+    public powerAutomateUrl: string;
 
     private spHttpClient: SPHttpClient;
 
@@ -72,7 +74,6 @@ export default class SharePointService {
 
     private async checkSupervisorLists(userEmail: string): Promise<string[]> {
         try {
-            debugger;
             const headers: HeadersInit = {
                 Accept: "application/json"
             };
@@ -83,7 +84,7 @@ export default class SharePointService {
                 let supervisors: ISearchResults;
 
                 if (this.useEscalatedSecurity) {
-                    supervisors = await this.callAzureService<ISearchResults>(buildPermissionsApiUrl(config.permissionsApiUrls.searchListItems), url, "");
+                    supervisors = await this.callPowerAutomate<ISearchResults>(this.pageContext.site.absoluteUrl, url, "GET", headers);
                 } else {
                     const response = await this.spHttpClient.get(url, SPHttpClient.configurations.v1, { headers });
 
@@ -112,9 +113,7 @@ export default class SharePointService {
 
     public async getRecords(): Promise<IRecord[]> {
         try {
-            const records = await (this.useEscalatedSecurity
-                ? this.getDriveItems<IRecord[]>(this.getRecordsUrlBuilder(config.lists.AudioFiles.name), config.lists.AudioFiles.name, parseRecordsResponseUseEscalationSecurity)
-                : this.getListItems<IRecord[]>(this.getRecordsUrlBuilder(config.lists.AudioFiles.name), parseRecordsResponse));
+            const records = await this.getListItems<IRecord[]>(this.getRecordsUrlBuilder(config.lists.AudioFiles.name), parseRecordsResponse);
 
             return records;
         } catch (ex) {
@@ -124,11 +123,9 @@ export default class SharePointService {
         }
     }
 
-    public async uploadRecordFile(file: File, name: string, fileId?: string): Promise<boolean> {
+    public async uploadRecordFile(file: File, name: string): Promise<boolean> {
         try {
-            await (this.useEscalatedSecurity
-                ? this.uploadDriveItem(this.libraryUploadUrlBuiler(config.lists.AudioFiles.name, name, fileId), file, config.lists.AudioFiles.name)
-                : this.createListItem(this.libraryUploadUrlBuiler(config.lists.AudioFiles.name, name), file));
+            await this.createListItem(this.libraryUploadUrlBuiler(config.lists.AudioFiles.name, name), file);
 
             return true;
         } catch (e) {
@@ -185,7 +182,7 @@ export default class SharePointService {
             const agents: { value: unknown[] } = await this.getListItems(`${this.getItemsUrlBuilder(config.lists.Agents.name)}`);
             const skills: { value: unknown[] } = await this.getListItems(`${this.getItemsUrlBuilder(config.lists.Skills.name)}`);
 
-            return parseSkillPerAgentFieldsResponse(agents, skills, this.useEscalatedSecurity);
+            return parseSkillPerAgentFieldsResponse(agents, skills);
         } catch (ex) {
             throw ex;
         }
@@ -193,13 +190,8 @@ export default class SharePointService {
 
     public async getSkillPerAgentItems(): Promise<IClientSkillItem[]> {
         try {
-            const fields = this.useEscalatedSecurity
-                ? `(select=${config.lists.SkillsPerAgent.fields.expandedSkillName},${config.lists.SkillsPerAgent.fields.expandedSkillId},${config.lists.SkillsPerAgent.fields.expandedAgentName},${config.lists.SkillsPerAgent.fields.expandedAgentId},${config.lists.SkillsPerAgent.fields.score},id,${config.lists.SkillsPerAgent.fields.agentLookup},${config.lists.SkillsPerAgent.fields.skillLookup})`
-                : `?$select=${config.lists.SkillsPerAgent.fields.expandedSkillName},${config.lists.SkillsPerAgent.fields.expandedSkillId},${config.lists.SkillsPerAgent.fields.expandedAgentName},${config.lists.SkillsPerAgent.fields.expandedAgentId},${config.lists.SkillsPerAgent.fields.score},Id&$expand=${config.lists.SkillsPerAgent.fields.skill},${config.lists.SkillsPerAgent.fields.agent}`;
-            const items = await this.getListItems<IClientSkillItem[]>(
-                `${this.getItemsUrlBuilder(config.lists.SkillsPerAgent.name)}${fields}`,
-                this.useEscalatedSecurity ? parseSkillsPerAgentResponseUseEscalationSecurity : parseSkillsPerAgentResponse
-            );
+            const fields = `?$select=${config.lists.SkillsPerAgent.fields.expandedSkillName},${config.lists.SkillsPerAgent.fields.expandedSkillId},${config.lists.SkillsPerAgent.fields.expandedAgentName},${config.lists.SkillsPerAgent.fields.expandedAgentId},${config.lists.SkillsPerAgent.fields.score},Id&$expand=${config.lists.SkillsPerAgent.fields.skill},${config.lists.SkillsPerAgent.fields.agent}`;
+            const items = await this.getListItems<IClientSkillItem[]>(`${this.getItemsUrlBuilder(config.lists.SkillsPerAgent.name)}${fields}`, parseSkillsPerAgentResponse);
 
             return items;
         } catch (ex) {
@@ -211,13 +203,11 @@ export default class SharePointService {
 
     public async createSkillPerAgentItem(item: IClientSkillItem): Promise<boolean> {
         try {
-            const serverItem = this.useEscalatedSecurity
-                ? { fields: { wsp_ucc_spa_AgentLookupId: item.agent.id, wsp_ucc_spa_skillLookupId: item.skill.id, wsp_ucc_Score: item.score } }
-                : {
-                      wsp_ucc_spa_AgentId: item.agent.id,
-                      wsp_ucc_spa_skillId: item.skill.id,
-                      wsp_ucc_Score: item.score
-                  };
+            const serverItem = {
+                wsp_ucc_spa_AgentId: item.agent.id,
+                wsp_ucc_spa_skillId: item.skill.id,
+                wsp_ucc_Score: item.score
+            };
 
             await this.createListItem(this.getItemsUrlBuilder(config.lists.SkillsPerAgent.name), JSON.stringify(serverItem));
 
@@ -231,13 +221,11 @@ export default class SharePointService {
 
     public async updateSkillPerAgent(item: IClientSkillItem): Promise<boolean> {
         try {
-            const serverItem = this.useEscalatedSecurity
-                ? { wsp_ucc_spa_AgentLookupId: item.agent.id, wsp_ucc_spa_skillLookupId: item.skill.id, wsp_ucc_Score: item.score }
-                : {
-                      wsp_ucc_spa_AgentId: item.agent.id,
-                      wsp_ucc_spa_skillId: item.skill.id,
-                      wsp_ucc_Score: item.score
-                  };
+            const serverItem = {
+                wsp_ucc_spa_AgentId: item.agent.id,
+                wsp_ucc_spa_skillId: item.skill.id,
+                wsp_ucc_Score: item.score
+            };
 
             await this.updateListItems(this.updateItemUrlBuilder(config.lists.SkillsPerAgent.name, item.id), JSON.stringify(serverItem));
 
@@ -284,11 +272,7 @@ export default class SharePointService {
             let values: { value: unknown[] } = { value: [] };
 
             if (this.useEscalatedSecurity) {
-                const response = await this.callAzureService<{ value: unknown[] }>(
-                    buildPermissionsApiUrl(config.permissionsApiUrls.getListItems),
-                    url,
-                    isActiveSites ? this.activeSitesSiteUrl : this.activeSiteUrl
-                );
+                const response = await this.callPowerAutomate<{ value: unknown[] }>(isActiveSites ? this.activeSitesSiteUrl : this.activeSiteUrl, url, "GET", headers);
 
                 values = response;
             } else {
@@ -312,7 +296,7 @@ export default class SharePointService {
         };
 
         const response = this.useEscalatedSecurity
-            ? this.callAzureService(buildPermissionsApiUrl(config.permissionsApiUrls.createListItem), url, this.activeSiteUrl, body)
+            ? this.callPowerAutomate(this.activeSiteUrl, url, "POST", headers, body)
             : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
@@ -327,7 +311,7 @@ export default class SharePointService {
         };
 
         const response = this.useEscalatedSecurity
-            ? this.callAzureService(buildPermissionsApiUrl(config.permissionsApiUrls.updateListItem), url, this.activeSiteUrl, body)
+            ? this.callPowerAutomate(this.activeSiteUrl, url, "POST", headers, JSON.parse(body))
             : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
@@ -357,31 +341,29 @@ export default class SharePointService {
 
     private updateItemUrlBuilder(listName: string, itemId: number): string {
         return this.useEscalatedSecurity
-            ? `https://graph.microsoft.com/v1.0/sites/{siteId}/lists/${listName}/items/${itemId}/fields`
+            ? `_api/Web/Lists/getByTitle('${listName}')/items(${itemId})`
             : `${this.activeSiteUrl}/_api/Web/Lists/getByTitle('${listName}')/items(${itemId})`;
     }
 
     private searchSupervisorByEmailQuery(userEmail: string): string {
-        return `${this.pageContext.site.absoluteUrl}/_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'`;
+        return this.useEscalatedSecurity
+            ? `_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'`
+            : `${this.pageContext.site.absoluteUrl}/_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'`;
     }
 
     private getActiveSitesUrlBuilder(): string {
         return this.useEscalatedSecurity
-            ? `https://graph.microsoft.com/v1.0/sites/{siteId}/lists/${this.activeSitesLibraryName}/items?expand=fields`
+            ? `_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items`
             : `${this.activeSitesSiteUrl}/_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items`;
     }
 
     private getItemsUrlBuilder(listName: string): string {
-        return this.useEscalatedSecurity
-            ? `https://graph.microsoft.com/v1.0/sites/{siteId}/lists/${listName}/items?expand=fields`
-            : `${this.activeSiteUrl}/_api/Web/Lists/getByTitle('${listName}')/items`;
+        return this.useEscalatedSecurity ? `_api/Web/Lists/getByTitle('${listName}')/items` : `${this.activeSiteUrl}/_api/Web/Lists/getByTitle('${listName}')/items`;
     }
 
-    private libraryUploadUrlBuiler(listName: string, fileName: string, fileId?: string): string {
+    private libraryUploadUrlBuiler(listName: string, fileName: string): string {
         if (this.useEscalatedSecurity) {
-            return fileId === undefined
-                ? `https://graph.microsoft.com/v1.0//drives/{driveId}/items/root:/${fileName}:/content`
-                : `https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/items/${fileId}/content`;
+            return fileName;
         }
 
         return `${this.activeSitesSiteUrl}/_api/Web/Lists/getByTitle('${listName}')/RootFolder/Files/Add(url='${fileName}', overwrite=true)`;
@@ -391,7 +373,7 @@ export default class SharePointService {
         const serverRelativeUrl = new window.URL(this.activeSiteUrl).pathname;
 
         return this.useEscalatedSecurity
-            ? `https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/root/children`
+            ? `_api/web/GetFolderByServerRelativeUrl('${serverRelativeUrl}/${libraryName}')/Files`
             : `${this.activeSiteUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeUrl}/${libraryName}')/Files`;
     }
 
@@ -487,6 +469,56 @@ export default class SharePointService {
         } catch (e) {
             throw e;
         }
+    }
+
+    private async callPowerAutomate<T>(siteUrl: string, apiUrl: string, method: string, headers: HeadersInit, data?: BodyInit): Promise<T> {
+        try {
+            const mandatoryParams = {
+                siteUrl,
+                apiUrl,
+                spfxToken: this.spfxToken,
+                method,
+                headers
+            };
+
+            let body;
+
+            if (data instanceof File) {
+                const base64 = await this.convertFileToBase64(data);
+
+                body = JSON.stringify({ ...mandatoryParams, fileBase64: (base64 as string).replace("data:application/octet-stream;base64,", "") });
+            } else {
+                body = JSON.stringify({ ...mandatoryParams, data });
+            }
+
+            const response = await fetch(this.powerAutomateUrl, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body
+            });
+            const content = await response.json();
+
+            if (response.ok) {
+                return content;
+            } else {
+                throw new Error(content);
+            }
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    private async convertFileToBase64(file: File): Promise<string | ArrayBuffer> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
     }
 
     // </Private methods>

@@ -21,13 +21,14 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
     const [businessHoursItems, setBusinessHoursItems] = React.useState<IClientHourItem[]>([]);
     const [changedItems, setChangedItems] = React.useState<IClientHourItem[]>([]);
     const [notification, setNotification] = React.useState<{ message: string; status: boolean } | null>(null);
-    const [loading, setLoading] = React.useState<{ type: "loading" | "uploading" } | null>({ type: "loading" });
+    const [loading, setLoading] = React.useState<{ type: "loading" | "uploading" } | null>(null);
     const [selectedDays, setSelectedDays] = React.useState<number[]>([]);
     const [lastUpdate, setLastUpdate] = React.useState<number>(0);
 
     React.useEffect(() => {
         const loadBusinessHoursItems = async () => {
             try {
+                setLoading({ type: "loading" });
                 const items = await sharePointService.getBusinessHours();
 
                 setBusinessHoursItems(items);
@@ -96,7 +97,7 @@ const BusinessHours: React.FC<IBusinessHoursProps> = ({ activeSiteKey, sharePoin
 
     return (
         <div className={styles.businessHoursWrapper}>
-            {loading?.type === "loading"
+            {loading?.type === "loading" || loading?.type === "uploading"
                 ? [0, 1, 2, 3, 4, 5, 6].map(s => <Shimmer key={s} className={styles.shimmer} width="100%" />)
                 : businessHoursItems.map(h => <Hour key={h.id} hour={h} onCheckboxChange={onSelectedDayChange} selected={selectedDays.indexOf(h.id) >= 0} />)}
 

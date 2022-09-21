@@ -50,6 +50,7 @@ declare interface ISpfxDevExpressPoCWebPartStrings {
     ShouldCheckSupervisorLabel: string;
     UseEscalatedSecuritySettingsLabel: string;
     SpfxTokenPropertyPaneLabel: string;
+    PowerAutomateUrlLabel: string;
 }
 
 declare module "SpfxDevExpressPoCWebPartStrings" {

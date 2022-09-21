@@ -50,6 +50,7 @@ define([], function() {
     "SkillPerAgentScoreSliderLabel": "Score",
     "ShouldCheckSupervisorLabel": "Should check supervisor list",
     "UseEscalatedSecuritySettingsLabel": "Use escalated security",
-    "SpfxTokenPropertyPaneLabel": "Security Token"
+    "SpfxTokenPropertyPaneLabel": "Security Token",
+    "PowerAutomateUrlLabel": "Power automate url"
   }
 });

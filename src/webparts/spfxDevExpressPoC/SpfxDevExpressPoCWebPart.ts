@@ -19,6 +19,7 @@ export interface ISpfxDevExpressPoCWebPartProps {
     shouldCheckSupervisor: boolean;
     useEscalatedSecurity: boolean;
     spfxToken: string;
+    powerAutomateUrl: string;
 }
 
 export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpfxDevExpressPoCWebPartProps> {
@@ -35,7 +36,8 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
             shouldCheckSupervisor: this.properties.shouldCheckSupervisor,
             useEscalatedSecurity: this.properties.useEscalatedSecurity,
             spfxToken: this.properties.spfxToken,
-            isEditMode: this.displayMode == DisplayMode.Edit
+            isEditMode: this.displayMode == DisplayMode.Edit,
+            powerAutomateUrl: this.properties.powerAutomateUrl
         });
 
         ReactDom.render(element, this.domElement);
@@ -97,6 +99,10 @@ export default class SpfxDevExpressPoCWebPart extends BaseClientSideWebPart<ISpf
                                 PropertyPaneTextField("spfxToken", {
                                     label: strings.SpfxTokenPropertyPaneLabel,
                                     value: this.properties.spfxToken
+                                }),
+                                PropertyPaneTextField("powerAutomateUrl", {
+                                    label: strings.PowerAutomateUrlLabel,
+                                    value: this.properties.powerAutomateUrl
                                 })
                             ]
                         },
