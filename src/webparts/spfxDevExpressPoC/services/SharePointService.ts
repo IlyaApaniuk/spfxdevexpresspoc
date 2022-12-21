@@ -9,7 +9,7 @@ import { IRecord } from "../models/records/IRecord";
 import { ISearchResults } from "../models/search/ISearchResults";
 import { IClientSkillItem } from "../models/skillsPerAgent/IClientSkillItem";
 import { IFieldValues } from "../models/skillsPerAgent/IFieldValues";
-import parseActiveSitesRespose from "../utils/parsers/parseActiveSitesResponse";
+import parseActiveSitesResponse from "../utils/parsers/parseActiveSitesResponse";
 import parseBusinessHoursResponse from "../utils/parsers/parseBusinessHoursResponse";
 import { parseRecordsResponse } from "../utils/parsers/parseRecordsResponse";
 import parseSearchResults from "../utils/parsers/parseSearchResults";
@@ -66,7 +66,7 @@ export default class SharePointService {
 
             const items: { value: unknown[] } = await this.getListItems(this.getActiveSitesUrlBuilder(), undefined, true);
 
-            return parseActiveSitesRespose(items, this.shouldCheckSupervisor ? sites : undefined);
+            return parseActiveSitesResponse(items, this.shouldCheckSupervisor ? sites : undefined);
         } catch (ex) {
             throw ex;
         }
@@ -84,7 +84,7 @@ export default class SharePointService {
                 let supervisors: ISearchResults;
 
                 if (this.useEscalatedSecurity) {
-                    supervisors = await this.callPowerAutomate<ISearchResults>(this.pageContext.site.absoluteUrl, url, "GET", headers);
+                    supervisors = await this.callPowerAutomate<ISearchResults>(this.activeSitesSiteUrl, url, "GET", headers);
                 } else {
                     const response = await this.spHttpClient.get(url, SPHttpClient.configurations.v1, { headers });
 
@@ -190,7 +190,7 @@ export default class SharePointService {
 
     public async getSkillPerAgentItems(): Promise<IClientSkillItem[]> {
         try {
-            const fields = `?$select=${config.lists.SkillsPerAgent.fields.expandedSkillName},${config.lists.SkillsPerAgent.fields.expandedSkillId},${config.lists.SkillsPerAgent.fields.expandedAgentName},${config.lists.SkillsPerAgent.fields.expandedAgentId},${config.lists.SkillsPerAgent.fields.score},Id&$expand=${config.lists.SkillsPerAgent.fields.skill},${config.lists.SkillsPerAgent.fields.agent}`;
+            const fields = `?$select=${config.lists.SkillsPerAgent.fields.expandedSkillName},${config.lists.SkillsPerAgent.fields.expandedSkillId},${config.lists.SkillsPerAgent.fields.expandedAgentName},${config.lists.SkillsPerAgent.fields.expandedAgentId},${config.lists.SkillsPerAgent.fields.score},Id&$expand=${config.lists.SkillsPerAgent.fields.skill},${config.lists.SkillsPerAgent.fields.agent}&$top=5000`;
             const items = await this.getListItems<IClientSkillItem[]>(`${this.getItemsUrlBuilder(config.lists.SkillsPerAgent.name)}${fields}`, parseSkillsPerAgentResponse);
 
             return items;
@@ -311,7 +311,7 @@ export default class SharePointService {
         };
 
         const response = this.useEscalatedSecurity
-            ? this.callPowerAutomate(this.activeSiteUrl, url, "POST", headers, JSON.parse(body))
+            ? this.callPowerAutomate(this.activeSiteUrl, url, "POST", headers, body)
             : this.spHttpClient.post(url, SPHttpClient.configurations.v1, { headers, body });
 
         return response;
@@ -347,14 +347,14 @@ export default class SharePointService {
 
     private searchSupervisorByEmailQuery(userEmail: string): string {
         return this.useEscalatedSecurity
-            ? `_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'`
-            : `${this.pageContext.site.absoluteUrl}/_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'`;
+            ? `_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'&ClientType='Supervisor'`
+            : `${this.pageContext.site.absoluteUrl}/_api/search/query?querytext='${userEmail}'&SelectProperties='wspuccSupervisorupnOWSTEXT,wspuccSupervisorphoneuriOWSTEXT,wspuccSupervisorOWSTEXT,SPWebUrl'&ClientType='Supervisor'`;
     }
 
     private getActiveSitesUrlBuilder(): string {
         return this.useEscalatedSecurity
-            ? `_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items`
-            : `${this.activeSitesSiteUrl}/_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items`;
+            ? `_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items?$top=5000`
+            : `${this.activeSitesSiteUrl}/_api/Web/Lists/getByTitle('${this.activeSitesLibraryName}')/items?$top=5000`;
     }
 
     private getItemsUrlBuilder(listName: string): string {

@@ -68,7 +68,7 @@ const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePoint
                 id: editableSkillItem.id,
                 agent: agent || editableSkillItem?.agent,
                 skill: skill || editableSkillItem?.skill,
-                score: score || editableSkillItem?.score
+                score: score >= 0 ? score : editableSkillItem?.score
             });
 
             setStatus({ type: isUploaded ? "success" : "error" });
@@ -84,9 +84,9 @@ const SkillsPerAgentDialog: React.FC<ISkillsPerAgentDialogProps> = ({ sharePoint
             setStatus({ type: "uploading" });
             const isUploaded = await sharePointService.createSkillPerAgentItem({
                 id: -1,
-                agent: agent || editableSkillItem?.agent,
-                skill: skill || editableSkillItem?.skill,
-                score: score || editableSkillItem?.score
+                agent: agent,
+                skill: skill,
+                score: score
             });
 
             setStatus({ type: isUploaded ? "success" : "error" });

@@ -2,7 +2,7 @@ define([], function() {
   return {
     "PropertyPaneDescription": "Settings",
     "SettingsGroupName": "Source settings",
-    "SourceLibraryNameLable": "Library name",
+    "SourceLibraryNameLable": "Active sites library name",
     "PickSourceSiteLabel": "Select source site",
     "DisableCreateNewRecordLabel": "Disable create new record button",
     "UISettingsGroupName": "UI settings",

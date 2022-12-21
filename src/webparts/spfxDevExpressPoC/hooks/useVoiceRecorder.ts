@@ -2,38 +2,26 @@ import * as React from "react";
 
 interface IVoiceRecorderState {
     status: "paused" | "recording" | "recorded" | "idle";
-    mediaRecorder: MediaRecorder | null;
-    streamBeingCaptured: MediaStream | null;
 }
 
-type Actions =
-    | { type: "start"; payload: MediaRecorder }
-    | { type: "stream"; payload: MediaStream }
-    | { type: "stop" }
-    | { type: "pause" }
-    | { type: "resume" }
-    | { type: "cancel" };
+type Actions = { type: "start" } | { type: "stop" } | { type: "pause" } | { type: "resume" } | { type: "cancel" };
 
 const initialState: IVoiceRecorderState = {
-    status: "idle",
-    mediaRecorder: null,
-    streamBeingCaptured: null
+    status: "idle"
 };
 
 const reducer = (state: IVoiceRecorderState, action: Actions): IVoiceRecorderState => {
     switch (action.type) {
         case "start":
-            return { ...state, status: "recording", mediaRecorder: action.payload };
-        case "stream":
-            return { ...state, streamBeingCaptured: action.payload };
+            return { status: "recording" };
         case "stop":
-            return { ...state, status: "recorded", mediaRecorder: null, streamBeingCaptured: null };
+            return { status: "recorded" };
         case "pause":
-            return { ...state, status: "paused" };
+            return { status: "paused" };
         case "resume":
-            return { ...state, status: "recording" };
+            return { status: "recording" };
         case "cancel":
-            return { ...state, status: "idle" };
+            return { status: "idle" };
         default:
             return { ...state };
     }
@@ -42,8 +30,10 @@ const reducer = (state: IVoiceRecorderState, action: Actions): IVoiceRecorderSta
 const useVoiceRecorder = (callback: (blob: Blob) => void) => {
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const chunks = React.useRef<Blob[]>([]);
-    // dirty workaround for timer
+    // dirty workaround
     const currentTime = React.useRef<number>(0);
+    const currentRecorder = React.useRef<MediaRecorder | null>(null);
+    const currentStream = React.useRef<MediaStream | null>(null);
     const [time, setTime] = React.useState<number>(currentTime.current);
 
     React.useEffect(() => {
@@ -68,10 +58,12 @@ const useVoiceRecorder = (callback: (blob: Blob) => void) => {
 
         callback(audioBlob);
     };
+
     const onTimeReset = () => {
         setTime(0);
         currentTime.current = 0;
     };
+
     const onStart = async (): Promise<void> => {
         if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
             return Promise.reject(new Error("mediaDevices API or getUserMedia method is not supported in this browser."));
@@ -79,40 +71,43 @@ const useVoiceRecorder = (callback: (blob: Blob) => void) => {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const recorder = new MediaRecorder(stream);
 
-            dispatch({ type: "start", payload: recorder });
-            dispatch({ type: "stream", payload: stream });
+            dispatch({ type: "start" });
+            currentRecorder.current = recorder;
+            currentStream.current = stream;
 
-            recorder.addEventListener("dataavailable", event => {
+            currentRecorder.current.addEventListener("dataavailable", event => {
                 chunks.current.push(event.data);
             });
-            recorder.start();
+            currentRecorder.current.start();
         }
     };
 
     const onStop = () => {
-        const mimeType = state.mediaRecorder.mimeType;
+        const mimeType = currentRecorder.current.mimeType;
 
-        state.mediaRecorder.addEventListener("stop", () => finishRecording(mimeType));
-        state.mediaRecorder.stop();
-        state.streamBeingCaptured.getTracks().forEach(track => track.stop());
+        currentRecorder.current.addEventListener("stop", () => finishRecording(mimeType));
+        currentRecorder.current.stop();
+        currentStream.current.getTracks().forEach(track => track.stop());
         dispatch({ type: "stop" });
         chunks.current = [];
         onTimeReset();
     };
 
     const onPause = () => {
-        state.mediaRecorder.pause();
+        currentRecorder.current.pause();
         dispatch({ type: "pause" });
     };
 
     const onResume = () => {
-        state.mediaRecorder.resume();
+        currentRecorder.current.resume();
         dispatch({ type: "resume" });
     };
 
     const onCancel = () => {
         dispatch({ type: "cancel" });
         chunks.current = [];
+        currentRecorder.current = null;
+        currentStream.current = null;
     };
 
     return { status: state.status, time, onStart, onStop, onPause, onResume, onCancel };

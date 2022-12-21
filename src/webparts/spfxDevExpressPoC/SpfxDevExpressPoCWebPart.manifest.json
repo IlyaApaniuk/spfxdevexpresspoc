@@ -15,7 +15,7 @@
     "description": { "default": "SpfxDevExpressPoC description" },
     "officeFabricIconFontName": "Table",
     "properties": {
-      "libraryName": "AudioFiles",
+      "libraryName": "ActiveSites",
       "recordsTablLabel": "Greetings"
     }
   }]
