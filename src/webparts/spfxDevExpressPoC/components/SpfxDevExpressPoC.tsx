@@ -42,12 +42,6 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
     const [loading, setLoading] = React.useState<boolean>(true);
 
     React.useEffect(() => {
-        sharePointService.activeSitesLibraryName = libraryName;
-        sharePointService.activeSitesSiteUrl = sourceSite;
-        sharePointService.shouldCheckSupervisor = shouldCheckSupervisor;
-        sharePointService.useEscalatedSecurity = useEscalatedSecurity;
-        sharePointService.spfxToken = spfxToken;
-        sharePointService.powerAutomateUrl = powerAutomateUrl;
         const pullActiveSites = async () => {
             try {
                 const sites = await sharePointService.getActiveSites(userEmail);
@@ -59,8 +53,17 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
             }
         };
 
-        !isEditMode && pullActiveSites();
-    }, [sharePointService, libraryName, sourceSite, userEmail, shouldCheckSupervisor, useEscalatedSecurity, spfxToken, isEditMode, powerAutomateUrl]);
+        !isEditMode && userEmail ? pullActiveSites() : setLoading(false);
+    }, [isEditMode, userEmail, sharePointService]);
+
+    React.useEffect(() => {
+        sharePointService.activeSitesLibraryName = libraryName;
+        sharePointService.activeSitesSiteUrl = sourceSite;
+        sharePointService.shouldCheckSupervisor = shouldCheckSupervisor;
+        sharePointService.useEscalatedSecurity = useEscalatedSecurity;
+        sharePointService.spfxToken = spfxToken;
+        sharePointService.powerAutomateUrl = powerAutomateUrl;
+    }, [sharePointService, libraryName, sourceSite, shouldCheckSupervisor, useEscalatedSecurity, spfxToken, powerAutomateUrl]);
 
     const listContainsTagList = (tag: ITag, tagList?: ITag[]) => {
         if (!tagList || !tagList.length || tagList.length === 0) {
@@ -89,22 +92,25 @@ const SpfxDevExpressPoC: React.FC<ISpfxDevExpressPoCProps> = ({
 
     return (
         <div className={styles.wrapper}>
-            <label htmlFor="tag-list-id">{strings.ActiveSitesDropdownLabel}</label>
+            {userEmail && <label htmlFor="tag-list-id">{strings.ActiveSitesDropdownLabel}</label>}
             {loading ? (
                 <Spinner size={SpinnerSize.medium} />
             ) : (
-                <TagPicker
-                    className=""
-                    onChange={onActiveSiteChange}
-                    itemLimit={1}
-                    onEmptyResolveSuggestions={onEmptyPickerClick}
-                    onResolveSuggestions={filterSuggestedTags}
-                    getTextFromItem={getTextFromItem}
-                    pickerSuggestionsProps={{ noResultsFoundText: "No sites found" }}
-                    inputProps={{
-                        id: "tag-list-id"
-                    }}
-                />
+                <>
+                    <TagPicker
+                        className={userEmail ? "" : styles.sitePickerHidden}
+                        onChange={onActiveSiteChange}
+                        itemLimit={1}
+                        onEmptyResolveSuggestions={onEmptyPickerClick}
+                        onResolveSuggestions={filterSuggestedTags}
+                        getTextFromItem={getTextFromItem}
+                        pickerSuggestionsProps={{ noResultsFoundText: "No sites found" }}
+                        inputProps={{
+                            id: "tag-list-id"
+                        }}
+                    />
+                    {!userEmail && <div className={styles.userEmailEmptyError}>Your account is returning no username.</div>}
+                </>
             )}
             {activeSiteKey && (
                 <Tabs activeSiteKey={activeSiteKey} sharePointService={sharePointService} disableCreateNewRecord={disableCreateNewRecord} recordsTabLabel={recordsTabLabel} />
