@@ -61,7 +61,7 @@ export default class SharePointService {
             let sites: string[] = [];
 
             if (this.shouldCheckSupervisor) {
-                sites = await this.checkSupervisorLists(userEmail);
+                sites = await this.checkSupervisorLists(userEmail.slice(0, userEmail.indexOf("@")));
             }
 
             const items: { value: unknown[] } = await this.getListItems(this.getActiveSitesUrlBuilder(), undefined, true);
@@ -434,7 +434,8 @@ export default class SharePointService {
         try {
             const headers: HeadersInit = {
                 Accept: "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "user-name": this.pageContext.user.email
             };
 
             const mandatoryParams = {
@@ -495,7 +496,8 @@ export default class SharePointService {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "user-name": this.pageContext.user.email
                 },
                 body
             });
